@@ -25,7 +25,9 @@ export const projectBySlugQuery = /* groq */ `
 export const aboutQuery = /* groq */ `
   *[_type == "about"][0]{
     _id,
+    title,
     aboutText,
+    "downloadCvUrl": downloadCV.asset->url,
     address,
     contactPhone,
     contactEmail

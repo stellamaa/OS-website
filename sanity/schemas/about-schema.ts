@@ -6,6 +6,12 @@ const about = defineType({
   type: "document",
   fields: [
     defineField({
+      name: "title",
+      title: "Title",
+      type: "string",
+      description: "Title for the about page",
+    }),
+    defineField({
       name: "aboutText",
       title: "About Text",
       type: "array",
@@ -30,33 +36,18 @@ const about = defineType({
           },
         },
       ],
-      description: "Main text about the gallery location and access",
+      description: "Main text about the gallery",
+    }),
+    defineField({
+      name: "downloadCV",
+      title: "Download CV",
+      type: "file",
+      description: "Download the CV",
     }),
     defineField({
       name: "address",
       title: "Address",
-      type: "array",
-      of: [
-        { type: "block" },
-        {
-          type: "object",
-          name: "lineBreak",
-          title: "Line break",
-          description: "Adds a line break. Use when you want to start a new line.",
-          fields: [
-            defineField({
-              name: "marker",
-              title: "Marker",
-              type: "string",
-              initialValue: "lineBreak",
-              hidden: true,
-            }),
-          ],
-          preview: {
-            prepare: () => ({ title: "Line break", subtitle: "Adds a new line" }),
-          },
-        },
-      ],
+      type: "string",
       description: "Address text",
     }),
   

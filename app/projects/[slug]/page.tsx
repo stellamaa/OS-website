@@ -23,6 +23,7 @@ export default async function ProjectPage({ params }: PageProps) {
             <ProjectDetail project={project} />
           </div>
 
+        
           <div className="absolute bottom-0 left-0 max-w-[60%] text-[10px] leading-3 text-zinc-500">
             {(projects ?? []).map((p) => {
               const listTitle = p.listTitle || 'Untitled'
@@ -42,6 +43,7 @@ export default async function ProjectPage({ params }: PageProps) {
             })}
           </div>
 
+    
           <div className="absolute bottom-0 right-0 flex gap-6 text-[10px] tracking-wide text-zinc-500">
             <Link href="/projects/list" className="hover:text-black">
               LIST
