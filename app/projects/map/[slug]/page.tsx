@@ -4,6 +4,7 @@ import type { ReactNode } from 'react'
 
 import { sanityClient } from '@/sanity/lib/client'
 import { projectBySlugQuery } from '@/sanity/lib/queries'
+import SelectedMapTag from '../SelectedMapTag'
 
 type PortableTextChild = { _type?: string; text?: string }
 type PortableTextBlock = { _type: 'block'; children?: PortableTextChild[] }
@@ -12,12 +13,17 @@ type PortableTextNode = PortableTextBlock | PortableTextLineBreak
 
 type MapProjectDetailData = {
   title?: string
+  mapTitle?: string
   listTitle?: string
+  location?: { lat?: number; lng?: number } | null
   description?: PortableTextNode[] | null
   image?: Array<{ _key?: string; alt?: string; url?: string | null }> | null
 }
 
-type PageProps = { params: Promise<{ slug: string }> }
+type PageProps = {
+  params: Promise<{ slug: string }>
+  searchParams?: Promise<{ x?: string; y?: string }>
+}
 
 function renderDescription(description: MapProjectDetailData['description']): ReactNode {
   if (!Array.isArray(description)) return null
@@ -51,8 +57,12 @@ function renderDescription(description: MapProjectDetailData['description']): Re
   return nodes.length > 0 ? nodes : null
 }
 
-export default async function MapProjectPage({ params }: PageProps) {
+export default async function MapProjectPage({ params, searchParams }: PageProps) {
   const { slug } = await params
+  const resolvedSearchParams = searchParams ? await searchParams : undefined
+  const screenX = Number(resolvedSearchParams?.x)
+  const screenY = Number(resolvedSearchParams?.y)
+  const hasScreenPoint = Number.isFinite(screenX) && Number.isFinite(screenY)
   const project = await sanityClient.fetch<MapProjectDetailData | null>(projectBySlugQuery, { slug })
   const images = project?.image ?? []
 
@@ -69,19 +79,24 @@ export default async function MapProjectPage({ params }: PageProps) {
   return (
     <div className="min-h-screen w-full bg-white px-6 py-6 text-black">
       <div className="relative mx-auto flex min-h-[calc(100vh-3rem)] w-full flex-col">
+        <SelectedMapTag
+          title={project.mapTitle || project.title || 'Untitled'}
+          lat={project.location?.lat}
+          lng={project.location?.lng}
+          x={hasScreenPoint ? screenX : undefined}
+          y={hasScreenPoint ? screenY : undefined}
+        />
+
         <Link
           href="/projects/map"
           aria-label="Back to map"
-          className="absolute right-0 top-0 text-3xl font-light leading-none text-zinc-400 hover:text-black"
+          className="absolute right-0 top-0 text-7xl font-thin text-black"
         >
           ×
         </Link>
 
-        <div className="mx-auto pt-24 text-center text-[10px] text-zinc-black">
-          {project.listTitle || project.title || 'Untitled'}
-        </div>
 
-        <div className=" md:ml-50 fixed bottom-0 h-[62vh] w-full max-w-[400px] overflow-y-auto">
+        <div className="map-gallery-scroll md:ml-50 fixed bottom-0 h-[62vh] w-full max-w-[400px] overflow-y-auto">
           <div className="flex flex-col gap-0 pb-6">
             {images.map((img) =>
               img?.url ? (
@@ -99,7 +114,7 @@ export default async function MapProjectPage({ params }: PageProps) {
           </div>
         </div>
 
-        <div className="pointer-events-none absolute bottom-0 left-0 max-w-[50%] text-[10px] leading-3 text-zinc-500">
+        <div className="pointer-events-none absolute bottom-2 left-0 max-w-[50%] text-xs leading-2 text-black">
           {renderDescription(project.description ?? null)}
         </div>
 

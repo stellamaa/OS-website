@@ -11,8 +11,10 @@ export const projectBySlugQuery = /* groq */ `
   *[_type == "project" && slug.current == $slug][0]{
     _id,
     title,
+    mapTitle,
     listTitle,
     "slug": slug.current,
+    location,
     description,
     image[]{
       _key,

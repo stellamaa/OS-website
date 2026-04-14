@@ -79,12 +79,12 @@ export default function MapBoxLocationInput() {
       {points.map((p, i) => (
         <Link
           key={i}
-          href={`/projects/map/${p.slug}`}
+          href={`/projects/map/${p.slug}?x=${encodeURIComponent(p.x)}&y=${encodeURIComponent(p.y)}`}
           className="absolute text-[11px] tracking-wide"
           style={{ transform: `translate(${p.x}px, ${p.y}px)` }}
         >
           <div className="flex items-center gap-2">
-            <div className="h-1.5 w-1.5 rounded-full bg-transparent border border-black" />
+            <div className="h-2 w-2 rounded-full bg-transparent border border-black" />
             <span>{p.title}</span>
           </div>
         </Link>
