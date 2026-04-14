@@ -20,7 +20,7 @@ export default function ProjectsList({ projects }: { projects: ProjectListItem[]
           <div className="absolute bottom-0 left-0 max-w-[60%] text-[10px] leading-3 text-zinc-500">
             {projects.map((project) => {
               const listTitle = project.listTitle || 'Untitled'
-              const href = project.slug ? `/projects/${project.slug}` : '#'
+              const href = project.slug ? `/projects/list/${project.slug}` : '#'
               const isActive = project._id === activeId
 
               const row = (

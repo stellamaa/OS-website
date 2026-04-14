@@ -6,6 +6,7 @@ export default function Home() {
   const router = useRouter()
 
   return (
+   
     <div
       className="min-h-screen w-full bg-white px-6 py-6"
       onClick={() => router.push('/projects/list')}
@@ -19,7 +20,7 @@ export default function Home() {
       
 
         <div className="flex-1" />
-
+<h2>hej</h2>
        
       </div>
     </div>

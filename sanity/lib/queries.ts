@@ -34,3 +34,11 @@ export const aboutQuery = /* groq */ `
   }
 `
 
+export const locationsQuery = /* groq */ `
+  *[_type == "project" && defined(location)]{
+    "title": coalesce(mapTitle, title),
+    "slug": slug.current,
+    "lat": location.lat,
+    "lng": location.lng
+  }
+`

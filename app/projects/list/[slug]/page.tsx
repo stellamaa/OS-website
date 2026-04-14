@@ -3,7 +3,7 @@ import Link from 'next/link'
 import { sanityClient } from '@/sanity/lib/client'
 import { projectBySlugQuery, projectListQuery } from '@/sanity/lib/queries'
 
-import ProjectDetail from '../ProjectDetail'
+import ProjectDetail from '../../ProjectDetail'
 
 type PageProps = { params: Promise<{ slug: string }> }
 
@@ -16,15 +16,15 @@ export default async function ProjectPage({ params }: PageProps) {
 
   return (
     <div className="min-h-screen w-full bg-white px-6 py-6 text-black">
-      <div className="mx-auto flex min-h-[calc(100vh-3rem)] w-full flex-col items-center justify-between gap-4">
+      <div className="mx-auto flex min-h-[calc(100vh-3rem)] w-full flex-col items-center gap-4">
         <div className="relative w-full flex-1">
 
-          <div className="absolute inset-x-0 top-14">
+          <div className="absolute inset-x-0 top-50">
             <ProjectDetail project={project} />
           </div>
 
         
-          <div className="absolute bottom-0 left-0 max-w-[60%] text-[10px] leading-3 text-zinc-500">
+          <div className="absolute bottom-0 md:bottom-2 left-0 max-w-[60%] text-xs leading-3 text-zinc-500">
             {(projects ?? []).map((p) => {
               const listTitle = p.listTitle || 'Untitled'
               const href = p.slug ? `/projects/${p.slug}` : '#'
@@ -44,8 +44,8 @@ export default async function ProjectPage({ params }: PageProps) {
           </div>
 
     
-          <div className="absolute bottom-0 right-0 flex gap-6 text-[10px] tracking-wide text-zinc-500">
-            <Link href="/projects/list" className="hover:text-black">
+          <div className="absolute md:bottom-1 bottom-0 right-0 flex gap-6 text-xs tracking-wide text-zinc-500">
+            <Link href="/projects/list" className="text-black">
               LIST
             </Link>
             <Link href="/projects/map" className="hover:text-black">

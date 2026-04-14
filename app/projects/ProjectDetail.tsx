@@ -69,10 +69,9 @@ export default function ProjectDetail({ project }: { project: ProjectDetailData 
             />
           ) : null}
         </div>
-
-        <div className="mt-4 max-w-[520px] text-left text-xs leading-2 text-black">
-          {renderDescription(project.description ?? null)}
-        </div>
+      </div>
+      <div className="pointer-events-none fixed bottom-8 left-1/2 w-[420px] -translate-x-1/2 text-left text-xs leading-2 text-black">
+        {renderDescription(project.description ?? null)}
       </div>
     </div>
   )
