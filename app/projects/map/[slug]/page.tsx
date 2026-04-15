@@ -91,7 +91,7 @@ export default async function MapProjectPage({ params, searchParams }: PageProps
         <Link
           href="/projects/map"
           aria-label="Back to map"
-          className="absolute right-0 top-0 text-7xl font-thin text-black"
+          className="fixed right-4 top-4 z-40 text-7xl font-thin text-black md:absolute md:right-0 md:top-0"
         >
           <Image src={closeButton} alt="Close" className="h-10 w-10" priority />
         </Link>

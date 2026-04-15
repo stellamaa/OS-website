@@ -81,7 +81,7 @@ export default function ProjectsList({ projects }: { projects: ProjectListItem[]
               />
             ) : null}
           </div>
-          <div className="absolute bottom-6 md:mb-2 left-0 max-w-[60%] text-xs leading-3 text-zinc-500">
+          <div className="absolute md:bottom-6 bottom-16 md:mb-2 left-0 md:max-w-[60%] max-w-[80%] md:text-xs text-sm md:leading-3 leading-4 text-zinc-500">
             {projects.map((project) => {
               const listTitle = project.listTitle || 'Untitled'
               const href = project.slug ? `/projects/list/${project.slug}` : '#'
@@ -105,12 +105,12 @@ export default function ProjectsList({ projects }: { projects: ProjectListItem[]
               )
             })}
           </div>
-          <div className="absolute bottom-0 left-0 text-xs tracking-wide text-zinc-500">
+          <div className="absolute bottom-0 left-0 md:text-xs text-xs tracking-wide text-zinc-500">
           <Link href="/about" className="text-zinc-500">AboutOS</Link>
         </div>
         
 
-          <div className="absolute bottom-0 right-0 flex gap-6 text-[10px] tracking-wide text-zinc-500">
+          <div className="absolute bottom-0 right-0 flex gap-6 md:text-xs text-sm tracking-wide text-zinc-500">
             <span className="text-black">LIST</span>
             <Link href="/projects/map" className="hover:text-black">
               MAP
