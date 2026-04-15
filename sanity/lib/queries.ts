@@ -3,7 +3,11 @@ export const projectListQuery = /* groq */ `
     _id,
     title,
     listTitle,
-    "slug": slug.current
+    "slug": slug.current,
+    "location": {
+      "lat": location.lat,
+      "lng": location.lng
+    }
   }
 `
 

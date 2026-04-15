@@ -89,7 +89,10 @@ export default function MapBoxLocationInput() {
           </div>
         </Link>
       ))}
-
+ <div className="absolute bottom-0 left-0 text-xs tracking-wide text-zinc-500">
+          <Link href="/about" className="text-zinc-500">AboutOS</Link>
+        </div>
+        
       <div className="absolute bottom-0 right-0 flex gap-6 text-[10px] tracking-wide text-zinc-500">
         <Link href="/projects/list" className="hover:text-black">
           LIST

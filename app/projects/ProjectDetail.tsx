@@ -48,7 +48,7 @@ function renderDescription(description: ProjectDetailData['description']): React
 export default function ProjectDetail({ project }: { project: ProjectDetailData | null }) {
   if (!project) {
     return (
-      <div className="w-full text-center text-[10px] leading-4 text-zinc-500">Not found.</div>
+      <div className="w-full text-center text-xs leading-4 text-zinc-500">Not found.</div>
     )
   }
 

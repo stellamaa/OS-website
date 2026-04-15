@@ -5,6 +5,7 @@ import type { ReactNode } from 'react'
 import { sanityClient } from '@/sanity/lib/client'
 import { projectBySlugQuery } from '@/sanity/lib/queries'
 import SelectedMapTag from '../SelectedMapTag'
+import closeButton from '@/public/assets/closeButton.png'
 
 type PortableTextChild = { _type?: string; text?: string }
 type PortableTextBlock = { _type: 'block'; children?: PortableTextChild[] }
@@ -92,11 +93,11 @@ export default async function MapProjectPage({ params, searchParams }: PageProps
           aria-label="Back to map"
           className="absolute right-0 top-0 text-7xl font-thin text-black"
         >
-          ×
+          <Image src={closeButton} alt="Close" className="h-10 w-10" priority />
         </Link>
 
 
-        <div className="map-gallery-scroll md:ml-50 fixed bottom-0 h-[62vh] w-full max-w-[400px] overflow-y-auto">
+        <div className="map-gallery-scroll fixed bottom-0 left-0 h-[62vh] w-full max-w-[400px] overflow-y-auto md:left-1/2 md:w-[400px] md:max-w-none md:-translate-x-full">
           <div className="flex flex-col gap-0 pb-6">
             {images.map((img) =>
               img?.url ? (
@@ -118,7 +119,7 @@ export default async function MapProjectPage({ params, searchParams }: PageProps
           {renderDescription(project.description ?? null)}
         </div>
 
-        <div className="absolute bottom-0 right-0 flex gap-6 text-[10px] tracking-wide text-zinc-500">
+        <div className="absolute bottom-0 right-0 flex gap-6 text-xs tracking-wide text-zinc-500">
           <Link href="/projects/list" className="text-zinc-500">
             LIST
           </Link>
