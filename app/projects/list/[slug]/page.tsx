@@ -27,7 +27,7 @@ export default async function ProjectPage({ params }: PageProps) {
           <div className="absolute bottom-0 md:bottom-2 left-0 max-w-[60%] text-xs leading-3 text-zinc-500">
             {(projects ?? []).map((p) => {
               const listTitle = p.listTitle || 'Untitled'
-              const href = p.slug ? `/projects/${p.slug}` : '#'
+              const href = p.slug ? `/projects/list/${p.slug}` : '#'
               const isCurrent = p.slug === slug
 
               return (
