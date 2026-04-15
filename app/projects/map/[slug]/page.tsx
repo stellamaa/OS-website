@@ -88,17 +88,18 @@ export default async function MapProjectPage({ params, searchParams }: PageProps
           y={hasScreenPoint ? screenY : undefined}
         />
 
-        <Link
-          href="/projects/map"
-          aria-label="Back to map"
-          className="fixed right-4 top-4 z-40 text-7xl font-thin text-black md:absolute md:right-0 md:top-0"
-        >
-          <Image src={closeButton} alt="Close" className="h-10 w-10" priority />
-        </Link>
+<div className="relative w-full flex-1">
+          <Link
+            href="/projects/map"
+            aria-label="Back to map"
+            className="fixed right-4 top-4 z-40 text-black md:absolute md:right-0 md:top-0"
+          >
+            <Image src={closeButton} alt="Close" className="h-10 w-10" priority />
+          </Link>
 
-
-        <div className="map-gallery-scroll fixed bottom-0 left-0 h-[62vh] w-full max-w-[400px] overflow-y-auto md:left-1/2 md:w-[400px] md:max-w-none md:-translate-x-full">
-          <div className="flex flex-col gap-0 pb-6">
+</div>
+        <div className="map-gallery-scroll fixed bottom-15 left-3 h-[62vh] w-full max-w-[400px] overflow-y-auto  md:bottom-0 md:left-1/2 md:w-[400px] md:max-w-none md:-translate-x-full">
+          <div className="flex flex-col gap-0 pb-6 ">
             {images.map((img) =>
               img?.url ? (
                 <Image
@@ -108,17 +109,19 @@ export default async function MapProjectPage({ params, searchParams }: PageProps
                   width={840}
                   height={1200}
                   unoptimized
-                  className="h-auto w-full object-cover"
+                  className="h-auto w-full object-cover max-w-[95%] mx-auto"
                 />
               ) : null,
             )}
           </div>
         </div>
 
-        <div className="pointer-events-none absolute bottom-2 left-0 max-w-[50%] text-xs leading-2 text-black">
+        <div className="pointer-events-none absolute bottom-2 left-0 max-w-[50%] text-xs leading-2 text-black hidden md:block">
           {renderDescription(project.description ?? null)}
         </div>
-
+        <div className="absolute bottom-0 left-0 text-xs tracking-wide text-zinc-500">
+          <Link href="/about" className="text-zinc-500">AboutOS</Link>
+        </div>
         <div className="absolute bottom-0 right-0 flex gap-6 text-xs tracking-wide text-zinc-500">
           <Link href="/projects/list" className="text-zinc-500">
             LIST
