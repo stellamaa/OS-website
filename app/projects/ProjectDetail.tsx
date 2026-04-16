@@ -70,7 +70,7 @@ export default function ProjectDetail({ project }: { project: ProjectDetailData 
           ) : null}
         </div>
       </div>
-      <div className="pointer-events-none fixed bottom-8 left-1/2 w-[420px] -translate-x-1/2 text-left text-xs leading-2 text-black">
+      <div className="pointer-events-none fixed bottom-8 left-1/2 w-[420px] -translate-x-1/2 text-left text-xs leading-2 text-black hidden md:block">
         {renderDescription(project.description ?? null)}
       </div>
     </div>

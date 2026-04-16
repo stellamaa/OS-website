@@ -116,7 +116,7 @@ export default async function MapProjectPage({ params, searchParams }: PageProps
           </div>
         </div>
 
-        <div className="pointer-events-none absolute bottom-2 left-0 max-w-[50%] text-xs leading-2 text-black hidden md:block">
+        <div className="pointer-events-none absolute bottom-2 left-0 max-w-[50%] text-xs leading-2 text-black hidden md:block md:bottom-7">
           {renderDescription(project.description ?? null)}
         </div>
         <div className="absolute bottom-0 left-0 text-xs tracking-wide text-zinc-500">

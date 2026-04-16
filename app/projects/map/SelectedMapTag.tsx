@@ -68,7 +68,7 @@ export default function SelectedMapTag({ title, lat, lng, x, y }: SelectedMapTag
   if (!point) return null
 
   return (
-    <div className="pointer-events-none absolute inset-0 z-30">
+    <div className="pointer-events-none fixed inset-0 z-50 md:absolute md:inset-0 md:z-30">
       {!hasScreenPoint ? <div ref={mapContainer} className="absolute inset-0 opacity-0" /> : null}
       <div
         className="absolute text-[11px] tracking-wide"
