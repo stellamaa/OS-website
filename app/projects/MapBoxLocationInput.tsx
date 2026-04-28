@@ -14,8 +14,8 @@ export default function MapBoxLocationInput() {
   const locationsRef = useRef<any[]>([])
 
   const accessToken =
-    process.env.NEXT_PUBLIC_MAPBOX_ACCESS_TOKEN ??
-    'pk.eyJ1Ijoic3RlbGxhbWEiLCJhIjoiY21ucnE0ZTVtMDUxczJycGZqcjBjaW1pNyJ9.CG5n9eKQSyGvhiJTfiM-9g'
+    process.env.NEXT_PUBLIC_MAPBOX_ACCESS_TOKEN
+  
 
   mapboxgl.accessToken = accessToken
 
