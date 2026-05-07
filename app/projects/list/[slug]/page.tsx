@@ -33,7 +33,7 @@ export default async function ProjectPage({ params }: PageProps) {
           </div>
 
         
-          <div className="absolute bottom-0 md:bottom-8 left-0 max-w-[60%] text-xs leading-3 text-zinc-500 hidden md:block">
+          <div className="absolute bottom-0 md:bottom-6 md:mb-7  left-0 max-w-[60%] text-xs leading-3 text-zinc-500 hidden md:block">
             {(projects ?? []).map((p) => {
               const listTitle = p.listTitle || 'Untitled'
               const href = p.slug ? `/projects/list/${p.slug}` : '#'
@@ -52,10 +52,10 @@ export default async function ProjectPage({ params }: PageProps) {
             })}
           </div>
 
-          <div className="absolute bottom-0 left-0 md:text-xs text-xs tracking-wide text-zinc-500">
+          <div className="absolute bottom-6 left-0 md:left-0 md:text-xs text-xs tracking-wide text-zinc-500">
           <Link href="/about" className="text-zinc-500">AboutOS</Link>
         </div>
-          <div className="absolute md:bottom-1 bottom-0 right-0 flex gap-6 text-xs tracking-wide text-zinc-500">
+          <div className="absolute md:bottom-6 bottom-6 right-0 md:right-2 flex gap-6 text-xs tracking-wide text-zinc-500">
             <Link href="/projects/list" className="text-black">
               LIST
             </Link>

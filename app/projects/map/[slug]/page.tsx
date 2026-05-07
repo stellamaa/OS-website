@@ -98,7 +98,7 @@ export default async function MapProjectPage({ params, searchParams }: PageProps
           </Link>
 
 </div>
-        <div className="map-gallery-scroll fixed bottom-15 left-3 h-[62vh] w-full max-w-[400px] overflow-y-auto  md:bottom-0 md:left-1/2 md:w-[400px] md:max-w-none md:-translate-x-full">
+        <div className="map-gallery-scroll fixed bottom-14 left-3 h-[62vh] w-full max-w-[400px] overflow-y-auto md:bottom-0 md:left-1/2 md:w-[400px] md:max-w-none md:-translate-x-full">
           <div className="flex flex-col gap-0 pb-6 ">
             {images.map((img) =>
               img?.url ? (
@@ -116,13 +116,13 @@ export default async function MapProjectPage({ params, searchParams }: PageProps
           </div>
         </div>
 
-        <div className="pointer-events-none absolute bottom-2 left-0 max-w-[50%] text-xs leading-2 text-black hidden md:block md:bottom-7">
+        <div className="pointer-events-none absolute bottom-2 left-0 max-w-[50%] text-xs leading-2 text-black hidden md:block md:bottom-6 md:mb-7">
           {renderDescription(project.description ?? null)}
         </div>
-        <div className="absolute bottom-0 left-0 text-xs tracking-wide text-zinc-500">
+        <div className="absolute bottom-6 left-0 md:left-0 text-xs tracking-wide text-zinc-500">
           <Link href="/about" className="text-zinc-500">AboutOS</Link>
         </div>
-        <div className="absolute bottom-0 right-0 flex gap-6 text-xs tracking-wide text-zinc-500">
+        <div className="absolute bottom-6 right-0 md:right-2 flex gap-6 text-xs tracking-wide text-zinc-500">
           <Link href="/projects/list" className="text-zinc-500">
             LIST
           </Link>

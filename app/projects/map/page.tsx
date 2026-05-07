@@ -1,12 +1,12 @@
 'use client'
 
-import MapBoxLocationInput from '../MapBoxLocationInput'
+import MapBoxProjectsMap from './MapBoxProjectsMap'
 
 export default function MapProjectsPage() {
   return (
     <div className="min-h-screen w-full bg-white px-6 py-6 text-black">
       <div className="mx-auto flex min-h-[calc(100vh-3rem)] w-full flex-col items-center justify-between gap-4">
-        <MapBoxLocationInput />
+        <MapBoxProjectsMap />
       </div>
     </div>
   )

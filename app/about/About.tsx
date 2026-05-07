@@ -68,7 +68,7 @@ export default function About({ about }: { about: AboutData | null }) {
             ) : null}
           </div>
 
-          <div className="mt-16 flex flex-col gap-6 pb-0 text-xs leading-4 text-black md:absolute md:bottom-24 absolute bottom-15 md:left-0 md:mt-0 md:flex-row md:pb-0">
+          <div className="mt-16 flex flex-col gap-6 pb-0 text-xs leading-4 text-black md:absolute md:bottom-24 absolute bottom-14 md:left-0 md:mt-0 md:flex-row md:pb-0">
             <div className="max-w-[220px] md:w-[70%]">{renderPortableText(about?.address ?? null)}</div>
             <div>
               {about?.contactPhone ? <div>{about.contactPhone}</div> : null}
@@ -76,8 +76,8 @@ export default function About({ about }: { about: AboutData | null }) {
             </div>
           </div>
 
-          <div className="absolute bottom-1 left-0 text-xs text-black">About</div>
-          <div className="absolute bottom-1 right-0 flex gap-6 text-xs tracking-wide text-zinc-500">
+          <div className="absolute bottom-6 left-0 md:left-2 text-xs text-black">About</div>
+          <div className="absolute bottom-6 right-0 md:right-2 flex gap-6 text-xs tracking-wide text-zinc-500">
             <Link href="/projects/list" className="hover:text-black">
               LIST
             </Link>

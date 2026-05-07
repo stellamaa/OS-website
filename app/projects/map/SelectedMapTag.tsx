@@ -72,7 +72,7 @@ export default function SelectedMapTag({ title, lat, lng, x, y }: SelectedMapTag
       {!hasScreenPoint ? <div ref={mapContainer} className="absolute inset-0 opacity-0" /> : null}
       <div
         className="absolute text-[11px] tracking-wide"
-        style={{ transform: `translate(${point.x}px, ${point.y}px)` }}
+        style={{ left: 0, top: 0, transform: `translate(${point.x}px, ${point.y}px)` }}
       >
         <div className="flex items-center gap-2">
           <div className="h-2 w-2 rounded-full border border-zinc-600 bg-zinc-300" />
