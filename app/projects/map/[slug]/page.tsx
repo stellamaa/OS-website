@@ -78,7 +78,7 @@ export default async function MapProjectPage({ params, searchParams }: PageProps
   }
 
   return (
-    <div className="min-h-screen w-full bg-white px-6 py-6 text-black">
+    <div className="min-h-screen w-full overflow-hidden bg-white px-6 py-6 text-black md:overflow-visible">
       <div className="relative mx-auto flex min-h-[calc(100vh-3rem)] w-full flex-col">
         <SelectedMapTag
           title={project.mapTitle || project.title || 'Untitled'}
