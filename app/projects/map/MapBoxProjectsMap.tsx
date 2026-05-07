@@ -148,13 +148,13 @@ export default function MapBoxProjectsMap() {
         })}
       </div>
 
-      <div className="absolute bottom-6 left-0 z-20 md:left-2 text-xs tracking-wide text-zinc-500">
+      <div className="fixed bottom-1 left-0 z-30 md:absolute md:bottom-6 md:left-2 text-xs tracking-wide text-zinc-500">
         <Link href="/about" className="hover:text-black">
           AboutOS
         </Link>
       </div>
 
-      <div className="absolute bottom-6 right-0 z-20 md:right-2 flex gap-6 text-xs tracking-wide text-zinc-500">
+      <div className="fixed bottom-1 right-0 z-30 md:absolute md:bottom-6 md:right-2 flex gap-6 text-xs tracking-wide text-zinc-500">
         <Link href="/projects/list" className="hover:text-black">
           LIST
         </Link>
