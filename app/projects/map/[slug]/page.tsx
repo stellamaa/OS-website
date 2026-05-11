@@ -78,7 +78,7 @@ export default async function MapProjectPage({ params, searchParams }: PageProps
   }
 
   return (
-    <div className="min-h-screen w-full overflow-hidden bg-white px-6 py-6 text-black md:overflow-visible">
+    <div className="h-[100dvh] w-full overflow-hidden bg-white px-6 py-6 text-black md:min-h-screen md:h-auto md:overflow-visible">
       <div className="relative mx-auto flex min-h-[calc(100vh-3rem)] w-full flex-col">
         <SelectedMapTag
           title={project.mapTitle || project.title || 'Untitled'}
@@ -119,10 +119,10 @@ export default async function MapProjectPage({ params, searchParams }: PageProps
         <div className="pointer-events-none absolute bottom-2 left-0 max-w-[50%] text-xs leading-2 text-black hidden md:block md:bottom-6 md:mb-7">
           {renderDescription(project.description ?? null)}
         </div>
-        <div className="fixed bottom-1 left-0 z-30 md:absolute md:bottom-6 md:left-0 text-xs tracking-wide text-zinc-500">
+        <div className="fixed left-0 z-30 bottom-[calc(env(safe-area-inset-bottom)+0.25rem)] md:absolute md:bottom-3 md:left-0 text-xs tracking-wide text-zinc-500">
           <Link href="/about" className="text-zinc-500">AboutOS</Link>
         </div>
-        <div className="fixed bottom-1 right-0 z-30 md:absolute md:bottom-6 md:right-2 flex gap-6 text-xs tracking-wide text-zinc-500">
+        <div className="fixed right-0 z-30 bottom-[calc(env(safe-area-inset-bottom)+0.25rem)] md:absolute md:bottom-3 md:right-2 flex gap-6 text-xs tracking-wide text-zinc-500">
           <Link href="/projects/list" className="text-zinc-500">
             LIST
           </Link>

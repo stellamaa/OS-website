@@ -72,12 +72,18 @@ export default function About({ about }: { about: AboutData | null }) {
             <div className="max-w-[220px] md:w-[70%]">{renderPortableText(about?.address ?? null)}</div>
             <div>
               {about?.contactPhone ? <div>{about.contactPhone}</div> : null}
-              {about?.contactEmail ? <div>{about.contactEmail}</div> : null}
+              {about?.contactEmail ? (
+                <div>
+                  <a href={`mailto:${about.contactEmail}`} className="hover:underline">
+                    {about.contactEmail}
+                  </a>
+                </div>
+              ) : null}
             </div>
           </div>
 
-          <div className="absolute bottom-6 left-0 md:left-2 text-xs text-black">About</div>
-          <div className="absolute bottom-6 right-0 md:right-2 flex gap-6 text-xs tracking-wide text-zinc-500">
+          <div className="absolute bottom-6 left-0 md:bottom-3 md:left-2 text-xs text-black">About</div>
+          <div className="absolute bottom-6 right-0 md:bottom-3 md:right-2 flex gap-6 text-xs tracking-wide text-zinc-500">
             <Link href="/projects/list" className="hover:text-black">
               LIST
             </Link>

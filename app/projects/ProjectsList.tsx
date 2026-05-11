@@ -105,12 +105,12 @@ export default function ProjectsList({ projects }: { projects: ProjectListItem[]
               )
             })}
           </div>
-          <div className="absolute bottom-6 left-0 md:left-0 md:text-xs text-xs tracking-wide text-zinc-500">
+          <div className="absolute bottom-6 left-0 md:bottom-3 md:left-0 md:text-xs text-xs tracking-wide text-zinc-500">
           <Link href="/about" className="text-zinc-500 ">AboutOS</Link>
         </div>
         
 
-          <div className="absolute bottom-6 right-0 md:right-2 flex gap-6 md:text-xs text-sm tracking-wide text-zinc-500">
+          <div className="absolute bottom-6 right-0 md:bottom-3 md:right-2 flex gap-6 md:text-xs text-sm tracking-wide text-zinc-500">
             <span className="text-black">LIST</span>
             <Link href="/projects/map" className="hover:text-black">
               MAP

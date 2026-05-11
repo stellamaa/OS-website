@@ -116,7 +116,7 @@ export default function MapBoxProjectsMap() {
   }, [locations, updatePoints])
 
   return (
-    <div className="relative w-full flex-1">
+    <div className="relative w-full flex-1 overscroll-none">
       <div
         ref={mapContainer}
         className="absolute inset-0 z-0 mapbox-host"
@@ -148,13 +148,13 @@ export default function MapBoxProjectsMap() {
         })}
       </div>
 
-      <div className="fixed bottom-1 left-0 z-30 md:absolute md:bottom-6 md:left-2 text-xs tracking-wide text-zinc-500">
+      <div className="fixed left-0 z-30 bottom-[calc(env(safe-area-inset-bottom)+0.25rem)] md:absolute md:bottom-3 md:left-2 text-xs tracking-wide text-zinc-500">
         <Link href="/about" className="hover:text-black">
           AboutOS
         </Link>
       </div>
 
-      <div className="fixed bottom-1 right-0 z-30 md:absolute md:bottom-6 md:right-2 flex gap-6 text-xs tracking-wide text-zinc-500">
+      <div className="fixed right-0 z-30 bottom-[calc(env(safe-area-inset-bottom)+0.25rem)] md:absolute md:bottom-3 md:right-2 flex gap-6 text-xs tracking-wide text-zinc-500">
         <Link href="/projects/list" className="hover:text-black">
           LIST
         </Link>
