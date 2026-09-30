@@ -1,99 +1,208 @@
+'use client'
+
+import Image from 'next/image'
 import Link from 'next/link'
-import type { ReactNode } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
 
-type PortableTextChild = { _type?: string; text?: string }
-type PortableTextBlock = { _type: 'block'; children?: PortableTextChild[] }
-type PortableTextLineBreak = { _type: 'lineBreak' }
-type PortableTextNode = PortableTextBlock | PortableTextLineBreak | { _type?: string }
+import closeButton from '@/public/assets/closeButton.png'
+import OficinaSateliteLogo from './OficinaSateliteLogo'
 
-export type AboutData = {
-  title?: string
-  aboutText?: PortableTextNode[] | null
-  address?: PortableTextNode[] | string | null
-  contactPhone?: string | null
-  contactEmail?: string | null
-  downloadCvUrl?: string | null
+export type AboutProjectItem = {
+  _id: string
+  title?: string | null
+  description?: string | null
+  image?: { alt?: string | null; url?: string | null } | null
 }
 
-function renderPortableText(value: PortableTextNode[] | string | null | undefined): ReactNode {
-  if (typeof value === 'string') return value
-  if (!Array.isArray(value)) return null
+const CONTACT_LINKS = [
+  { label: 'Mail', href: 'mailto:hello@oficinasatelite.com' },
+  { label: 'Press', href: 'mailto:press@oficinasatelite.com' },
+  { label: 'Applications', href: 'mailto:applications@oficinasatelite.com' },
+] as const
 
-  const nodes: ReactNode[] = []
-  let key = 0
+function isDesktopViewport() {
+  return typeof window !== 'undefined' && window.matchMedia('(min-width: 768px)').matches
+}
 
-  for (const item of value) {
-    if (!item) continue
+export default function About({ projects }: { projects: AboutProjectItem[] }) {
+  const [activeId, setActiveId] = useState<string | null>(null)
+  const scrollRef = useRef<HTMLDivElement | null>(null)
+  const activeProject = projects.find((p) => p._id === activeId) ?? null
+  const activeImageUrl = activeProject?.image?.url ?? null
 
-    if (item._type === 'lineBreak') {
-      nodes.push(<br key={`br-${key++}`} />)
-      continue
+  const updateActiveFromScroll = useCallback(() => {
+    if (isDesktopViewport()) return
+
+    const root = scrollRef.current
+    if (!root) return
+
+    // Stay white at the top of the list
+    if (root.scrollTop < 16) {
+      setActiveId(null)
+      return
     }
 
-    if (item._type === 'block') {
-      const children = (item as PortableTextBlock).children
-      const text = Array.isArray(children) ? children.map((c) => c?.text ?? '').join('') : ''
-      if (text.trim()) {
-        nodes.push(
-          <p key={`p-${key++}`} className="m-0">
-            {text}
-          </p>,
-        )
+    const rootRect = root.getBoundingClientRect()
+    const targetY = rootRect.top + Math.min(120, rootRect.height * 0.28)
+
+    let bestId: string | null = null
+    let bestDist = Infinity
+
+    const items = root.querySelectorAll<HTMLElement>('[data-project-id]')
+    for (const item of items) {
+      const rect = item.getBoundingClientRect()
+      if (rect.bottom < rootRect.top || rect.top > rootRect.bottom) continue
+
+      const mid = (rect.top + rect.bottom) / 2
+      const dist = Math.abs(mid - targetY)
+      if (dist < bestDist) {
+        bestDist = dist
+        bestId = item.dataset.projectId ?? null
       }
     }
-  }
 
-  return nodes.length ? nodes : null
-}
+    if (bestId) setActiveId(bestId)
+  }, [])
 
-export default function About({ about }: { about: AboutData | null }) {
+  useEffect(() => {
+    const root = scrollRef.current
+    if (!root) return
+
+    updateActiveFromScroll()
+    root.addEventListener('scroll', updateActiveFromScroll, { passive: true })
+    window.addEventListener('resize', updateActiveFromScroll)
+
+    return () => {
+      root.removeEventListener('scroll', updateActiveFromScroll)
+      window.removeEventListener('resize', updateActiveFromScroll)
+    }
+  }, [projects, updateActiveFromScroll])
+
   return (
-    <div className="min-h-screen w-full bg-white px-5 py-6 text-black md:px-6">
-      <div className="mx-auto flex min-h-[calc(100vh-3rem)] w-full flex-col">
-        <div className="relative flex-1">
-        
+    <div className="relative h-[100dvh] w-full overflow-hidden bg-white text-black">
+      {/* Background: white by default; project image on mobile scroll / desktop hover */}
+      <div
+        className="pointer-events-none absolute inset-0 opacity-0 transition-opacity duration-300"
+        style={{ opacity: activeImageUrl ? 1 : 0 }}
+        aria-hidden
+      >
+        {activeImageUrl ? (
+          <Image
+            src={activeImageUrl}
+            alt=""
+            fill
+            unoptimized
+            className="scale-110 object-cover blur-2xl brightness-110"
+            sizes="100vw"
+          />
+        ) : null}
+        <div className="absolute inset-0 bg-white/35 md:bg-white/25" />
+      </div>
 
-          <div className="md:max-w-[85%] max-w-[100%] pt-50 md:absolute md:left-0 md:top-[35%] md:pt-0">
-            <div className="text-xs text-black md:text-xs">About OS</div>
-            <div className="mt-5 md:w-[95%] w-[100%] md:text-lg text-xl text-black md:mt-5 md:w-[90%] md:text-xl">
-              {renderPortableText(about?.aboutText ?? null)}
-            </div>
+      {/*
+        Plain black text — no mix-blend, so the blurry image never recolors it.
+        Logo sits on top and difference-blends against this text + the image.
+      */}
+      <div className="relative flex h-full w-full flex-col px-5 py-5 md:px-7 md:py-8">
+        <div className="relative flex min-h-0 flex-1 flex-col md:flex-row md:items-stretch md:justify-between md:gap-10">
+          {/* Desktop left column */}
+          <div className="relative hidden min-h-0 shrink-0 flex-col md:flex md:h-full md:w-[34%] md:max-w-[28rem]">
+            {/* Spacer matching logo size so intro stays below the overlaid logo */}
+            <div className="h-[1.35rem]" aria-hidden />
+            <p className="mt-4 max-w-[19rem] text-lg leading-5 tracking-wide text-black">
+              is an architecture studio founded in 2021.
+            </p>
 
-            {about?.downloadCvUrl ? (
-              <div className="mt-5 text-xs text-black">
-                <a href={about.downloadCvUrl} className="hover:underline" target="_blank">
-                  (Download CV)
+            <div className="mt-auto flex flex-col gap-0 pt-10 text-sm tracking-wide text-black">
+              {CONTACT_LINKS.map((link) => (
+                <a key={link.label} href={link.href} className="hover:opacity-60">
+                  {link.label}
                 </a>
-              </div>
-            ) : null}
-          </div>
-
-          <div className="mt-16 flex flex-col gap-6 pb-0 text-xs leading-4 text-black md:absolute md:bottom-24 absolute bottom-14 md:left-0 md:mt-0 md:flex-row md:pb-0">
-            <div className="max-w-[220px] md:w-[70%]">{renderPortableText(about?.address ?? null)}</div>
-            <div>
-              {about?.contactPhone ? <div>{about.contactPhone}</div> : null}
-              {about?.contactEmail ? (
-                <div>
-                  <a href={`mailto:${about.contactEmail}`} className="hover:underline">
-                    {about.contactEmail}
-                  </a>
-                </div>
-              ) : null}
+              ))}
             </div>
           </div>
 
-          <div className="absolute bottom-6 left-0 md:bottom-3 md:left-2 text-xs text-black">About</div>
-          <div className="absolute bottom-6 right-0 md:bottom-3 md:right-2 flex gap-6 text-xs tracking-wide text-zinc-500">
-            <Link href="/projects/list" className="hover:text-black">
-              LIST
-            </Link>
-            <Link href="/projects/map" className="hover:text-black">
-              MAP
-            </Link>
+          <div
+            ref={scrollRef}
+            className="about-projects-scroll relative min-h-0 flex-1 overflow-y-auto overscroll-contain md:ml-auto md:mr-10 md:h-full md:w-[38%] md:max-w-[34rem] md:shrink-0 md:pr-4"
+          >
+            <p className="max-w-[19rem] pt-10 text-2xl leading-8 tracking-wide text-black md:hidden">
+              is an architecture studio founded in 2021.
+            </p>
+
+            <ul className="mt-8 flex flex-col gap-3 pb-24 md:mt-0 md:gap-6 md:pb-4">
+              {projects.map((project, index) => {
+                const title = (project.title || 'Untitled').toUpperCase()
+                const projectNumber = String(index + 1).padStart(3, '0')
+
+                return (
+                  <li key={project._id} data-project-id={project._id}>
+                    <button
+                      type="button"
+                      className="w-full cursor-default text-left text-black"
+                      onMouseEnter={() => {
+                        if (isDesktopViewport()) setActiveId(project._id)
+                      }}
+                      onMouseLeave={() => {
+                        if (isDesktopViewport()) setActiveId(null)
+                      }}
+                      onFocus={() => {
+                        if (isDesktopViewport()) setActiveId(project._id)
+                      }}
+                      onBlur={() => {
+                        if (isDesktopViewport()) setActiveId(null)
+                      }}
+                    >
+                      <div className="text-sm font-normal tracking-wide md:text-sm">
+                        {projectNumber}:
+                      </div>
+                      <div className="mt-0 text-sm font-normal tracking-wide md:text-sm">
+                        {title}
+                      </div>
+                      {project.description ? (
+                        <p className="mt-0 w-[16rem] text-sm leading-4 tracking-wide md:text-sm md:leading-4">
+                          {project.description}
+                        </p>
+                      ) : null}
+                    </button>
+                  </li>
+                )
+              })}
+            </ul>
           </div>
         </div>
+
+        {/* Mobile contacts */}
+        <div className="absolute bottom-5 left-5 flex flex-col gap-1 text-[11px] tracking-wide text-black md:hidden">
+          {CONTACT_LINKS.map((link) => (
+            <a key={link.label} href={link.href} className="hover:opacity-60">
+              {link.label}
+            </a>
+          ))}
+        </div>
       </div>
+
+      {/*
+        Logo on top — only element with mix-blend-difference.
+        Reacts to the image and to black text underneath; body text stays solid black.
+      */}
+      <OficinaSateliteLogo className="pointer-events-none absolute left-5 top-5 text-[1.75rem] leading-none mix-blend-difference md:left-7 md:top-8 md:text-[1.35rem]" />
+
+      <Link
+        href="/"
+        aria-label="Close"
+        className="absolute right-5 top-5 z-50 shrink-0 hover:opacity-60 md:right-7 md:top-8"
+      >
+        <Image
+          src={closeButton}
+          alt="Close"
+          className="h-3 w-3 md:hidden"
+          priority
+        />
+        <span className="hidden text-[11px] tracking-wide text-black md:inline md:text-sm">
+          Close
+        </span>
+      </Link>
     </div>
   )
 }
-

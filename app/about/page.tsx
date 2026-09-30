@@ -1,10 +1,9 @@
 import { sanityClient } from '@/sanity/lib/client'
-import { aboutQuery } from '@/sanity/lib/queries'
+import { aboutProjectsQuery } from '@/sanity/lib/queries'
 
-import About, { type AboutData } from './About'
+import About, { type AboutProjectItem } from './About'
 
 export default async function AboutPage() {
-  const about = await sanityClient.fetch<AboutData | null>(aboutQuery)
-  return <About about={about} />
+  const projects = await sanityClient.fetch<AboutProjectItem[]>(aboutProjectsQuery)
+  return <About projects={projects ?? []} />
 }
-
