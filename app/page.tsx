@@ -1,8 +1,8 @@
 import { sanityClient } from '@/sanity/lib/client'
 import { landingQuery } from '@/sanity/lib/queries'
-import LandingEnter, { type LandingData } from './LandingEnter'
+import LandingPage, { type LandingPageData } from '@/components/landingpage/LandingPage'
 
-export default async function Home() {
-  const landing = await sanityClient.fetch<LandingData | null>(landingQuery)
-  return <LandingEnter landing={landing} />
+export default async function LandingRoute() {
+  const landing = await sanityClient.fetch<LandingPageData | null>(landingQuery)
+  return <LandingPage landing={landing} />
 }

@@ -3,17 +3,19 @@
 import Image from 'next/image'
 import { useRouter } from 'next/navigation'
 
-export type LandingData = {
+import { imageSrc, type SanityImageField } from '@/sanity/lib/image'
+
+export type LandingPageData = {
   enterText?: string | null
-  heroImage?: { alt?: string | null; url?: string | null } | null
+  heroImage?: SanityImageField | null
 }
 
-export default function LandingEnter({ landing }: { landing: LandingData | null }) {
+export default function LandingPage({ landing }: { landing: LandingPageData | null }) {
   const router = useRouter()
   const enterText = landing?.enterText?.trim() || 'click anywhere to enter site'
-  const imageUrl = landing?.heroImage?.url ?? null
+  const imageUrl = imageSrc(landing?.heroImage, { width: 2560, quality: 85 })
 
-  const enter = () => router.push('/about')
+  const enter = () => router.push('/home')
 
   return (
     <div
@@ -32,7 +34,6 @@ export default function LandingEnter({ landing }: { landing: LandingData | null 
           alt={landing?.heroImage?.alt || 'Landing'}
           fill
           priority
-          unoptimized
           className="object-cover"
           sizes="100vw"
         />

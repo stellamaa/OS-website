@@ -5,13 +5,14 @@ import Link from 'next/link'
 import { useCallback, useEffect, useRef, useState } from 'react'
 
 import closeButton from '@/public/assets/closeButton.png'
+import { imageSrc, type SanityImageField } from '@/sanity/lib/image'
 import OficinaSateliteLogo from './OficinaSateliteLogo'
 
 export type AboutProjectItem = {
   _id: string
   title?: string | null
   description?: string | null
-  image?: { alt?: string | null; url?: string | null } | null
+  image?: SanityImageField | null
 }
 
 const CONTACT_LINKS = [
@@ -28,7 +29,7 @@ export default function About({ projects }: { projects: AboutProjectItem[] }) {
   const [activeId, setActiveId] = useState<string | null>(null)
   const scrollRef = useRef<HTMLDivElement | null>(null)
   const activeProject = projects.find((p) => p._id === activeId) ?? null
-  const activeImageUrl = activeProject?.image?.url ?? null
+  const activeImageUrl = imageSrc(activeProject?.image, { width: 1600, quality: 70 })
 
   const updateActiveFromScroll = useCallback(() => {
     if (isDesktopViewport()) return
@@ -91,7 +92,6 @@ export default function About({ projects }: { projects: AboutProjectItem[] }) {
             src={activeImageUrl}
             alt=""
             fill
-            unoptimized
             className="scale-110 object-cover blur-2xl brightness-110"
             sizes="100vw"
           />
@@ -130,7 +130,7 @@ export default function About({ projects }: { projects: AboutProjectItem[] }) {
               is an architecture studio founded in 2021.
             </p>
 
-            <ul className="mt-8 flex flex-col gap-3 pb-24 md:mt-0 md:gap-6 md:pb-4">
+            <ul className="mt-8 flex flex-col gap-3 pb-24 md:mt-0 md:gap-4 md:pb-4">
               {projects.map((project, index) => {
                 const title = (project.title || 'Untitled').toUpperCase()
                 const projectNumber = String(index + 1).padStart(3, '0')
@@ -160,7 +160,7 @@ export default function About({ projects }: { projects: AboutProjectItem[] }) {
                         {title}
                       </div>
                       {project.description ? (
-                        <p className="mt-0 w-[16rem] text-sm leading-4 tracking-wide md:text-sm md:leading-4">
+                        <p className="mt-0 w-[16rem] whitespace-pre-line text-sm leading-4 tracking-wide md:w-[25rem] md:text-sm md:leading-4">
                           {project.description}
                         </p>
                       ) : null}
