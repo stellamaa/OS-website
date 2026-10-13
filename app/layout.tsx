@@ -56,16 +56,13 @@ export const metadata: Metadata = {
 
 export default function RootLayout({
   children,
-  modal,
 }: Readonly<{
   children: React.ReactNode
-  modal: React.ReactNode
 }>) {
   return (
     <html lang="en" className={`${neueHaas.variable} h-full antialiased`} suppressHydrationWarning>
       <body className="min-h-full flex flex-col font-[family-name:var(--font-neue-haas)]" suppressHydrationWarning>
         {children}
-        {modal}
       </body>
     </html>
   )

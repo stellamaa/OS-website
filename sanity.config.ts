@@ -12,12 +12,14 @@ import landing from './sanity/schemas/landing-schema'
 import home, { homeSlide } from './sanity/schemas/home-schema'
 import { structure } from './sanity/structure'
 
+const siteBase = process.env.NEXT_PUBLIC_BASE_PATH || ''
+
 const config = defineConfig({
   projectId: 'dcvdj7yc',
   dataset: 'production',
   title: ' OS Website',
   apiVersion: '2026-04-08',
-  basePath: '/admin',
+  basePath: `${siteBase}/admin`,
   plugins: [structureTool({ structure })],
   schema: {
     types: [

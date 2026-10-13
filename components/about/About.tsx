@@ -139,7 +139,7 @@ export default function About({ projects }: { projects: AboutProjectItem[] }) {
                 is an architecture studio founded in 2021.
               </p>
 
-              <div className="mt-auto flex flex-col gap-0 pt-10 text-sm tracking-wide text-black">
+              <div className="mt-auto flex flex-col gap-0 pt-10 text-sm tracking-normal text-black">
                 {CONTACT_LINKS.map((link) => (
                   <a key={link.label} href={link.href} className="hover:opacity-60">
                     {link.label}

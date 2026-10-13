@@ -4,6 +4,14 @@ import ProjectDetail, { type ProjectDetailData } from '@/components/projects/Pro
 import { sanityClient } from '@/sanity/lib/client'
 import { projectBySlugQuery } from '@/sanity/lib/queries'
 
+export async function generateStaticParams() {
+  const projects = await sanityClient.fetch<{ slug: string | null }[]>(
+    `*[_type == "project" && defined(slug.current)]{ "slug": slug.current }`,
+  )
+
+  return projects.flatMap((project) => (project.slug ? [{ slug: project.slug }] : []))
+}
+
 export default async function ProjectPage({
   params,
 }: {
