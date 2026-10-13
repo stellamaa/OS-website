@@ -4,6 +4,7 @@ import Image from 'next/image'
 import Link from 'next/link'
 import { useCallback, useEffect, useRef, useState } from 'react'
 
+import osLogo from '@/public/assets/og-logo.svg'
 import { imageSrc, type SanityImageField } from '@/sanity/lib/image'
 
 export type ProjectBlock = {
@@ -182,8 +183,10 @@ export default function ProjectDetail({ project }: { project: ProjectDetailData 
         Projects
       </Link>
 
-      <div className="pointer-events-none absolute inset-x-0 top-5 z-20 flex justify-center mix-blend-difference md:top-8">
-        <span className="text-sm font-bold tracking-wide text-white md:text-base">OS</span>
+      <div className="absolute inset-x-0 top-5 z-20 flex justify-center mix-blend-difference md:top-8">
+        <Link href="/about" aria-label="About" className="hover:opacity-60">
+          <Image src={osLogo} alt="" priority className="h-4 w-auto md:h-[1.15rem]" />
+        </Link>
       </div>
 
       {!hideChrome ? (

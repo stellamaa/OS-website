@@ -1,12 +1,14 @@
 'use client'
 
 import Image from 'next/image'
-import Link from 'next/link'
+import { useRouter } from 'next/navigation'
 import { useCallback, useEffect, useRef, useState } from 'react'
 
 import closeButton from '@/public/assets/closeButton.png'
 import { imageSrc, type SanityImageField } from '@/sanity/lib/image'
 import OficinaSateliteLogo from './OficinaSateliteLogo'
+
+const OVERLAY_MS = 420
 
 export type AboutProjectItem = {
   _id: string
@@ -26,10 +28,28 @@ function isDesktopViewport() {
 }
 
 export default function About({ projects }: { projects: AboutProjectItem[] }) {
+  const router = useRouter()
+  const [open, setOpen] = useState(false)
   const [activeId, setActiveId] = useState<string | null>(null)
   const scrollRef = useRef<HTMLDivElement | null>(null)
+  const closingRef = useRef(false)
   const activeProject = projects.find((p) => p._id === activeId) ?? null
   const activeImageUrl = imageSrc(activeProject?.image, { width: 1600, quality: 70 })
+
+  // Drop in from above on mount
+  useEffect(() => {
+    const id = requestAnimationFrame(() => setOpen(true))
+    return () => cancelAnimationFrame(id)
+  }, [])
+
+  const closeToHome = useCallback(() => {
+    if (closingRef.current) return
+    closingRef.current = true
+    setOpen(false)
+    window.setTimeout(() => {
+      router.push('/home')
+    }, OVERLAY_MS)
+  }, [router])
 
   const updateActiveFromScroll = useCallback(() => {
     if (isDesktopViewport()) return
@@ -80,129 +100,137 @@ export default function About({ projects }: { projects: AboutProjectItem[] }) {
   }, [projects, updateActiveFromScroll])
 
   return (
-    <div className="relative h-[100dvh] w-full overflow-hidden bg-white text-black">
-      {/* Background: white by default; project image on mobile scroll / desktop hover */}
+    <div className="fixed inset-0 z-50 overflow-hidden">
       <div
-        className="pointer-events-none absolute inset-0 opacity-0 transition-opacity duration-300"
-        style={{ opacity: activeImageUrl ? 1 : 0 }}
-        aria-hidden
+        className={`relative h-[100dvh] w-full overflow-hidden bg-white text-black transition-transform ease-[cubic-bezier(0.22,1,0.36,1)] ${
+          open ? 'translate-y-0' : '-translate-y-full'
+        }`}
+        style={{ transitionDuration: `${OVERLAY_MS}ms` }}
       >
-        {activeImageUrl ? (
-          <Image
-            src={activeImageUrl}
-            alt=""
-            fill
-            className="scale-110 object-cover blur-2xl brightness-110"
-            sizes="100vw"
-          />
-        ) : null}
-        <div className="absolute inset-0 bg-white/35 md:bg-white/25" />
-      </div>
+        {/* Background: white by default; project image on mobile scroll / desktop hover */}
+        <div
+          className="pointer-events-none absolute inset-0 opacity-0 transition-opacity duration-300"
+          style={{ opacity: activeImageUrl ? 1 : 0 }}
+          aria-hidden
+        >
+          {activeImageUrl ? (
+            <Image
+              src={activeImageUrl}
+              alt=""
+              fill
+              className="scale-110 object-cover blur-2xl brightness-110"
+              sizes="100vw"
+            />
+          ) : null}
+          <div className="absolute inset-0 bg-white/35 md:bg-white/25" />
+        </div>
 
-      {/*
-        Plain black text — no mix-blend, so the blurry image never recolors it.
-        Logo sits on top and difference-blends against this text + the image.
-      */}
-      <div className="relative flex h-full w-full flex-col px-5 py-5 md:px-7 md:py-8">
-        <div className="relative flex min-h-0 flex-1 flex-col md:flex-row md:items-stretch md:justify-between md:gap-10">
-          {/* Desktop left column */}
-          <div className="relative hidden min-h-0 shrink-0 flex-col md:flex md:h-full md:w-[34%] md:max-w-[28rem]">
-            {/* Spacer matching logo size so intro stays below the overlaid logo */}
-            <div className="h-[1.35rem]" aria-hidden />
-            <p className="mt-4 max-w-[19rem] text-lg leading-5 tracking-wide text-black">
-              is an architecture studio founded in 2021.
-            </p>
+        {/*
+          Plain black text — no mix-blend, so the blurry image never recolors it.
+          Logo sits on top and difference-blends against this text + the image.
+        */}
+        <div className="relative flex h-full w-full flex-col px-5 py-5 md:px-7 md:py-8">
+          <div className="relative flex min-h-0 flex-1 flex-col md:flex-row md:items-stretch md:justify-between md:gap-10">
+            {/* Desktop left column */}
+            <div className="relative hidden min-h-0 shrink-0 flex-col md:flex md:h-full md:w-[34%] md:max-w-[28rem]">
+              {/* Spacer matching logo size so intro stays below the overlaid logo */}
+              <div className="h-[1.35rem]" aria-hidden />
+              <p className="mt-4 max-w-[20rem] md:max-w-[28rem] text-2xl leading-5 tracking-wide text-black">
+                is an architecture studio founded in 2021.
+              </p>
 
-            <div className="mt-auto flex flex-col gap-0 pt-10 text-sm tracking-wide text-black">
-              {CONTACT_LINKS.map((link) => (
-                <a key={link.label} href={link.href} className="hover:opacity-60">
-                  {link.label}
-                </a>
-              ))}
+              <div className="mt-auto flex flex-col gap-0 pt-10 text-sm tracking-wide text-black">
+                {CONTACT_LINKS.map((link) => (
+                  <a key={link.label} href={link.href} className="hover:opacity-60">
+                    {link.label}
+                  </a>
+                ))}
+              </div>
+            </div>
+
+            <div
+              ref={scrollRef}
+              className="about-projects-scroll relative min-h-0 flex-1 overflow-y-auto overscroll-contain md:ml-auto md:mr-10 md:h-full md:w-[38%] md:max-w-[34rem] md:shrink-0 md:pr-4"
+            >
+              <p className="max-w-[19rem] pt-10 text-2xl leading-8 tracking-wide text-black md:hidden">
+                is an architecture studio founded in 2021.
+              </p>
+
+              <ul className="mt-8 flex flex-col gap-3 pb-24 md:mt-0 md:gap-4 md:pb-4">
+                {projects.map((project, index) => {
+                  const title = (project.title || 'Untitled').toUpperCase()
+                  const projectNumber = String(index + 1).padStart(3, '0')
+
+                  return (
+                    <li key={project._id} data-project-id={project._id}>
+                      <button
+                        type="button"
+                        className="w-full cursor-default text-left text-black"
+                        onMouseEnter={() => {
+                          if (isDesktopViewport()) setActiveId(project._id)
+                        }}
+                        onMouseLeave={() => {
+                          if (isDesktopViewport()) setActiveId(null)
+                        }}
+                        onFocus={() => {
+                          if (isDesktopViewport()) setActiveId(project._id)
+                        }}
+                        onBlur={() => {
+                          if (isDesktopViewport()) setActiveId(null)
+                        }}
+                      >
+                        <div className="text-sm font-normal tracking-wide md:text-sm">
+                          {projectNumber}:
+                        </div>
+                        <div className="mt-0 text-sm font-normal tracking-wide md:text-sm">
+                          {title}
+                        </div>
+                        {project.description ? (
+                          <p className="mt-0 w-[16rem] whitespace-pre-line text-sm leading-4 tracking-wide md:w-[25rem] md:text-sm md:leading-4">
+                            {project.description}
+                          </p>
+                        ) : null}
+                      </button>
+                    </li>
+                  )
+                })}
+              </ul>
             </div>
           </div>
 
-          <div
-            ref={scrollRef}
-            className="about-projects-scroll relative min-h-0 flex-1 overflow-y-auto overscroll-contain md:ml-auto md:mr-10 md:h-full md:w-[38%] md:max-w-[34rem] md:shrink-0 md:pr-4"
-          >
-            <p className="max-w-[19rem] pt-10 text-2xl leading-8 tracking-wide text-black md:hidden">
-              is an architecture studio founded in 2021.
-            </p>
-
-            <ul className="mt-8 flex flex-col gap-3 pb-24 md:mt-0 md:gap-4 md:pb-4">
-              {projects.map((project, index) => {
-                const title = (project.title || 'Untitled').toUpperCase()
-                const projectNumber = String(index + 1).padStart(3, '0')
-
-                return (
-                  <li key={project._id} data-project-id={project._id}>
-                    <button
-                      type="button"
-                      className="w-full cursor-default text-left text-black"
-                      onMouseEnter={() => {
-                        if (isDesktopViewport()) setActiveId(project._id)
-                      }}
-                      onMouseLeave={() => {
-                        if (isDesktopViewport()) setActiveId(null)
-                      }}
-                      onFocus={() => {
-                        if (isDesktopViewport()) setActiveId(project._id)
-                      }}
-                      onBlur={() => {
-                        if (isDesktopViewport()) setActiveId(null)
-                      }}
-                    >
-                      <div className="text-sm font-normal tracking-wide md:text-sm">
-                        {projectNumber}:
-                      </div>
-                      <div className="mt-0 text-sm font-normal tracking-wide md:text-sm">
-                        {title}
-                      </div>
-                      {project.description ? (
-                        <p className="mt-0 w-[16rem] whitespace-pre-line text-sm leading-4 tracking-wide md:w-[25rem] md:text-sm md:leading-4">
-                          {project.description}
-                        </p>
-                      ) : null}
-                    </button>
-                  </li>
-                )
-              })}
-            </ul>
+          {/* Mobile contacts */}
+          <div className="absolute bottom-5 left-5 flex flex-col gap-1 text-[11px] tracking-wide text-black md:hidden">
+            {CONTACT_LINKS.map((link) => (
+              <a key={link.label} href={link.href} className="hover:opacity-60">
+                {link.label}
+              </a>
+            ))}
           </div>
         </div>
 
-        {/* Mobile contacts */}
-        <div className="absolute bottom-5 left-5 flex flex-col gap-1 text-[11px] tracking-wide text-black md:hidden">
-          {CONTACT_LINKS.map((link) => (
-            <a key={link.label} href={link.href} className="hover:opacity-60">
-              {link.label}
-            </a>
-          ))}
-        </div>
+        {/*
+          Logo on top — only element with mix-blend-difference.
+          Reacts to the image and to black text underneath; body text stays solid black.
+        */}
+        <OficinaSateliteLogo className="pointer-events-none absolute left-5 top-5 mix-blend-difference md:left-7 md:top-8" />
+
+        <button
+          type="button"
+          aria-label="Close"
+          onClick={closeToHome}
+          className="absolute right-5 top-5 z-50 shrink-0 hover:opacity-60 md:right-7 md:top-8"
+        >
+          <Image
+            src={closeButton}
+            alt="Close"
+            className="h-3 w-3 md:hidden"
+            priority
+          />
+          <span className="hidden text-[11px] tracking-wide text-black md:inline md:text-sm">
+            Close
+          </span>
+        </button>
       </div>
-
-      {/*
-        Logo on top — only element with mix-blend-difference.
-        Reacts to the image and to black text underneath; body text stays solid black.
-      */}
-      <OficinaSateliteLogo className="pointer-events-none absolute left-5 top-5 text-[1.75rem] leading-none mix-blend-difference md:left-7 md:top-8 md:text-[1.35rem]" />
-
-      <Link
-        href="/"
-        aria-label="Close"
-        className="absolute right-5 top-5 z-50 shrink-0 hover:opacity-60 md:right-7 md:top-8"
-      >
-        <Image
-          src={closeButton}
-          alt="Close"
-          className="h-3 w-3 md:hidden"
-          priority
-        />
-        <span className="hidden text-[11px] tracking-wide text-black md:inline md:text-sm">
-          Close
-        </span>
-      </Link>
     </div>
   )
 }

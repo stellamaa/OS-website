@@ -86,7 +86,12 @@ export default function Home({ home }: { home: HomeData | null }) {
   return (
     <div className="relative h-[100dvh] w-full overflow-hidden bg-black text-white">
       <div className="pointer-events-none absolute inset-x-0 top-5 z-20 flex justify-center md:top-8">
-        <span className="text-sm tracking-wide font-bold text-white md:text-base">OS</span>
+        <Link
+          href="/about"
+          className="pointer-events-auto text-sm font-bold tracking-wide text-white hover:opacity-60 md:text-base"
+        >
+          OS
+        </Link>
       </div>
 
       <div className="pointer-events-none absolute left-4 top-1/2 z-20 max-w-[40%] -translate-y-1/2 md:left-7">
