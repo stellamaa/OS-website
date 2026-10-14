@@ -44,11 +44,7 @@ export default function LandingPage({ landing }: { landing: LandingPageData | nu
         <Image src={osLogo} alt="OS" priority className="h-4 w-auto md:h-[1.15rem]" />
       </div>
 
-      <div className="pointer-events-none absolute inset-x-0 bottom-[18%] z-10 flex justify-center px-6">
-        <p className="font-[family-name:var(--font-neue-haas)] text-center text-xs tracking-wide text-white md:text-sm">
-          {enterText}
-        </p>
-      </div>
+     
     </div>
   )
 }

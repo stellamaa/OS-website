@@ -99,6 +99,12 @@ function isChromeHiddenBlock(block: ProjectBlock | undefined) {
   return block.mediaType === 'text'
 }
 
+function isCountedMedia(block: ProjectBlock) {
+  if (spacerSize(block) || block.mediaType === 'text') return false
+  if (block.mediaType === 'video') return Boolean(block.videoUrl)
+  return Boolean(block.image?.asset || block.image?.url)
+}
+
 function objectPositionFromHotspot(hotspot?: { x?: number; y?: number } | null) {
   if (hotspot?.x == null || hotspot?.y == null) return 'center'
   return `${hotspot.x * 100}% ${hotspot.y * 100}%`
@@ -120,32 +126,41 @@ function useIsDesktop() {
 
 export default function ProjectDetail({ project }: { project: ProjectDetailData }) {
   const blocks = (project.blocks ?? []).filter(blockIsValid)
-  const total = blocks.length
-  const [activeIndex, setActiveIndex] = useState(0)
+  const mediaBlocks = blocks.filter(isCountedMedia)
+  const mediaTotal = mediaBlocks.length
+  const firstMediaIndex = blocks.findIndex(isCountedMedia)
+  const [activeIndex, setActiveIndex] = useState(firstMediaIndex >= 0 ? firstMediaIndex : 0)
   const scrollRef = useRef<HTMLDivElement | null>(null)
   const isDesktop = useIsDesktop()
 
   const updateActiveFromScroll = useCallback(() => {
     const root = scrollRef.current
-    if (!root || total === 0) return
+    if (!root || blocks.length === 0) return
 
     const mid = root.scrollTop + root.clientHeight / 2
-    let best = 0
+    let containing = -1
+    let best = -1
     let bestDist = Infinity
 
     const items = root.querySelectorAll<HTMLElement>('[data-block-index]')
     for (const item of items) {
+      if (item.offsetHeight < 1) continue
+      const index = Number(item.dataset.blockIndex)
+      if (Number.isNaN(index)) continue
       const top = item.offsetTop
+      const bottom = top + item.offsetHeight
+      if (mid >= top && mid < bottom) containing = index
       const center = top + item.offsetHeight / 2
       const dist = Math.abs(center - mid)
       if (dist < bestDist) {
         bestDist = dist
-        best = Number(item.dataset.blockIndex) || 0
+        best = index
       }
     }
 
-    setActiveIndex(best)
-  }, [total])
+    const next = containing >= 0 ? containing : best
+    if (next >= 0) setActiveIndex(next)
+  }, [blocks.length])
 
   useEffect(() => {
     const root = scrollRef.current
@@ -154,19 +169,23 @@ export default function ProjectDetail({ project }: { project: ProjectDetailData 
     updateActiveFromScroll()
     root.addEventListener('scroll', updateActiveFromScroll, { passive: true })
     window.addEventListener('resize', updateActiveFromScroll)
+    const observer = new ResizeObserver(() => updateActiveFromScroll())
+    observer.observe(root)
 
     return () => {
+      observer.disconnect()
       root.removeEventListener('scroll', updateActiveFromScroll)
       window.removeEventListener('resize', updateActiveFromScroll)
     }
-  }, [updateActiveFromScroll, blocks.length])
+  }, [updateActiveFromScroll, isDesktop])
 
   const activeBlock = blocks[activeIndex]
   const hideChrome = isChromeHiddenBlock(activeBlock)
   const activeCaption = hideChrome ? '' : activeBlock?.caption?.trim() || ''
   const projectName = (project.title || '').toUpperCase()
+  const mediaIndex = mediaBlocks.findIndex((block) => block._key === activeBlock?._key)
 
-  if (total === 0) {
+  if (blocks.length === 0) {
     return (
       <div className="flex h-[100dvh] w-full items-center justify-center bg-[#d9d9d9] text-black">
         <p className="text-sm tracking-wide">Add page blocks in Sanity → Project</p>
@@ -205,7 +224,7 @@ export default function ProjectDetail({ project }: { project: ProjectDetailData 
 
           <div className="pointer-events-none absolute bottom-5 right-4 z-20 mix-blend-difference md:bottom-8 md:right-7">
             <span className="text-xs tracking-wide text-white md:text-sm">
-              {activeIndex + 1}/{total}
+              {mediaIndex + 1}/{mediaTotal}
             </span>
           </div>
         </>
