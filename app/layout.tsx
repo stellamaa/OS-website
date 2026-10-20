@@ -1,5 +1,7 @@
 import type { Metadata } from 'next'
 import localFont from 'next/font/local'
+
+import Providers from '@/components/Providers'
 import './globals.css'
 
 const neueHaas = localFont({
@@ -62,7 +64,7 @@ export default function RootLayout({
   return (
     <html lang="en" className={`${neueHaas.variable} h-full antialiased`} suppressHydrationWarning>
       <body className="min-h-full flex flex-col font-[family-name:var(--font-neue-haas)]" suppressHydrationWarning>
-        {children}
+        <Providers>{children}</Providers>
       </body>
     </html>
   )

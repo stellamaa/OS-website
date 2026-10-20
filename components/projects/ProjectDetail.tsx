@@ -4,6 +4,7 @@ import Image from 'next/image'
 import Link from 'next/link'
 import { useCallback, useEffect, useRef, useState } from 'react'
 
+import AboutLink from '@/components/AboutLink'
 import osLogo from '@/public/assets/og-logo.svg'
 import { imageSrc, type SanityImageField } from '@/sanity/lib/image'
 
@@ -197,33 +198,33 @@ export default function ProjectDetail({ project }: { project: ProjectDetailData 
     <div className="relative h-[100dvh] w-full overflow-hidden bg-[#dedede]">
       <Link
         href="/home"
-        className="absolute left-4 top-5 z-30 text-xs tracking-wide text-white mix-blend-difference hover:opacity-60 md:left-7 md:top-8 md:text-sm"
+        className="absolute left-4 top-5 z-30 text-xs tracking-wide text-white mix-blend-difference hover:opacity-60 md:left-7 md:top-8 md:text-sm 4xl:text-2xl"
       >
         Projects
       </Link>
 
       <div className="absolute inset-x-0 top-5 z-20 flex justify-center mix-blend-difference md:top-8">
-        <Link href="/about" aria-label="About" className="hover:opacity-60">
-          <Image src={osLogo} alt="" priority className="h-4 w-auto md:h-[1.15rem]" />
-        </Link>
+        <AboutLink aria-label="About" className="hover:opacity-60">
+          <Image src={osLogo} alt="" priority className="h-4 w-auto md:h-[1.15rem] 4xl:h-9" />
+        </AboutLink>
       </div>
 
       {!hideChrome ? (
         <>
-          <div className="pointer-events-none absolute bottom-5 left-4 z-20 max-w-[40%] mix-blend-difference md:bottom-8 md:left-7">
-            <span className="block text-xs tracking-wide text-white md:text-sm">
+          <div className="pointer-events-none absolute bottom-2 left-4 z-20 max-w-[40%] mix-blend-difference md:bottom-3 md:left-7">
+            <span className="block text-xs tracking-wide text-white md:text-sm 4xl:text-2xl">
               {projectName}
             </span>
           </div>
 
-          <div className="pointer-events-none absolute inset-x-0 bottom-5 z-20 flex justify-center px-16 mix-blend-difference md:bottom-8">
-            <span className="block text-center text-xs tracking-wide text-white md:text-sm">
+          <div className="pointer-events-none absolute inset-x-0 bottom-2 z-20 flex justify-center px-16 mix-blend-difference md:bottom-3">
+            <span className="block text-center text-xs tracking-wide text-white 4xl:text-2xl md:text-sm">
               {activeCaption}
             </span>
           </div>
 
-          <div className="pointer-events-none absolute bottom-5 right-4 z-20 mix-blend-difference md:bottom-8 md:right-7">
-            <span className="text-xs tracking-wide text-white md:text-sm">
+          <div className="pointer-events-none absolute bottom-2 right-4 z-20 mix-blend-difference md:bottom-3 md:right-7">
+            <span className="text-xs tracking-wide text-white md:text-sm 4xl:text-2xl">
               {mediaIndex + 1}/{mediaTotal}
             </span>
           </div>
@@ -282,8 +283,8 @@ export default function ProjectDetail({ project }: { project: ProjectDetailData 
                 <p
                   className={
                     isDesktop
-                      ? 'max-w-[50rem] whitespace-pre-line text-left text-base leading-6 tracking-wide text-black'
-                      : 'max-w-md whitespace-pre-line text-left text-sm leading-5 tracking-wide text-black'
+                      ? 'max-w-[50rem] whitespace-pre-line text-center text-base leading-6 tracking-wide text-black 4xl:max-w-[75rem] 4xl:text-2xl 4xl:leading-8'
+                      : 'max-w-md whitespace-pre-line text-center text-sm leading-5 tracking-wide text-black'
                   }
                 >
                   {body}
@@ -320,15 +321,18 @@ export default function ProjectDetail({ project }: { project: ProjectDetailData 
           const imgW = block.image?.width ?? 1
           const imgH = block.image?.height ?? 1
           const isLandscape = imgW >= imgH
+          // Landscape: wide CDN source so full-width display stays sharp.
+          // Portrait: tall source for viewport-height display.
           const src = isLandscape
-            ? imageSrc(block.image, { width: 2560, quality: 85 })
+            ? imageSrc(block.image, { width: 3840, quality: 90 })
             : imageSrc(block.image, {
                 width: isDesktop ? undefined : 1600,
-                height: isDesktop ? 2000 : undefined,
-                quality: 85,
+                height: isDesktop ? 2400 : undefined,
+                quality: 90,
               })
 
-          // Mobile: full width, natural aspect (object-contain). Desktop: landscape full-bleed / portrait viewport-tall.
+          // Mobile: full width, natural aspect. Desktop landscape: edge-to-edge width,
+          // no crop (shows whole image — may letterbox top/bottom). Portrait: viewport-tall.
           if (!isDesktop) {
             return (
               <section
@@ -360,17 +364,16 @@ export default function ProjectDetail({ project }: { project: ProjectDetailData 
             >
               {src ? (
                 isLandscape ? (
-                  <div className="relative h-full w-full">
-                    <Image
-                      src={src}
-                      alt={block.image?.alt || block.caption || project.title || ''}
-                      fill
-                      priority={index === 0}
-                      className="object-cover"
-                      style={{ objectPosition }}
-                      sizes="100vw"
-                    />
-                  </div>
+                  <Image
+                    src={src}
+                    alt={block.image?.alt || block.caption || project.title || ''}
+                    width={imgW}
+                    height={imgH}
+                    priority={index === 0}
+                    className="h-full w-full object-contain"
+                    style={{ objectPosition }}
+                    sizes="100vw"
+                  />
                 ) : (
                   <Image
                     src={src}

@@ -1,14 +1,12 @@
 'use client'
 
 import Image from 'next/image'
-import { useRouter } from 'next/navigation'
 import { useCallback, useEffect, useRef, useState } from 'react'
 
+import { useSiteTransition } from '@/components/SiteTransition'
 import closeButton from '@/public/assets/closeButton.png'
 import { imageSrc, type SanityImageField } from '@/sanity/lib/image'
 import OficinaSateliteLogo from './OficinaSateliteLogo'
-
-const OVERLAY_MS = 420
 
 export type AboutProjectItem = {
   _id: string
@@ -28,28 +26,9 @@ function isDesktopViewport() {
 }
 
 export default function About({ projects }: { projects: AboutProjectItem[] }) {
-  const router = useRouter()
-  const [open, setOpen] = useState(false)
+  const { leaveAbout } = useSiteTransition()
   const [activeId, setActiveId] = useState<string | null>(null)
   const scrollRef = useRef<HTMLDivElement | null>(null)
-  const closingRef = useRef(false)
-  const activeProject = projects.find((p) => p._id === activeId) ?? null
-  const activeImageUrl = imageSrc(activeProject?.image, { width: 1600, quality: 70 })
-
-  // Drop in from above on mount
-  useEffect(() => {
-    const id = requestAnimationFrame(() => setOpen(true))
-    return () => cancelAnimationFrame(id)
-  }, [])
-
-  const closeToHome = useCallback(() => {
-    if (closingRef.current) return
-    closingRef.current = true
-    setOpen(false)
-    window.setTimeout(() => {
-      router.push('/home')
-    }, OVERLAY_MS)
-  }, [router])
 
   const updateActiveFromScroll = useCallback(() => {
     if (isDesktopViewport()) return
@@ -100,29 +79,32 @@ export default function About({ projects }: { projects: AboutProjectItem[] }) {
   }, [projects, updateActiveFromScroll])
 
   return (
-    <div className="fixed inset-0 z-50 overflow-hidden">
-      <div
-        className={`relative h-[100dvh] w-full overflow-hidden bg-white text-black transition-transform ease-[cubic-bezier(0.22,1,0.36,1)] ${
-          open ? 'translate-y-0' : '-translate-y-full'
-        }`}
-        style={{ transitionDuration: `${OVERLAY_MS}ms` }}
-      >
-        {/* Background: white by default; project image on mobile scroll / desktop hover */}
-        <div
-          className="pointer-events-none absolute inset-0 opacity-0 transition-opacity duration-300"
-          style={{ opacity: activeImageUrl ? 1 : 0 }}
-          aria-hidden
-        >
-          {activeImageUrl ? (
-            <Image
-              src={activeImageUrl}
-              alt=""
-              fill
-              className="scale-110 object-cover blur-2xl brightness-110"
-              sizes="100vw"
-            />
-          ) : null}
-          <div className="absolute inset-0 bg-white/35 md:bg-white/25" />
+    <div className="relative h-[100dvh] w-full overflow-hidden bg-white text-black">
+        {/* Background: stacked project images crossfade on hover / mobile scroll */}
+        <div className="pointer-events-none absolute inset-0" aria-hidden>
+          {projects.map((project) => {
+            const url = imageSrc(project.image, { width: 1600, quality: 70 })
+            if (!url) return null
+            return (
+              <div
+                key={project._id}
+                className="absolute inset-0 transition-opacity duration-500 ease-in-out"
+                style={{ opacity: activeId === project._id ? 1 : 0 }}
+              >
+                <Image
+                  src={url}
+                  alt=""
+                  fill
+                  className="scale-110 object-cover blur-2xl brightness-110"
+                  sizes="100vw"
+                />
+              </div>
+            )
+          })}
+          <div
+            className="absolute inset-0 bg-white/35 transition-opacity duration-500 ease-in-out md:bg-white/25"
+            style={{ opacity: activeId ? 1 : 0 }}
+          />
         </div>
 
         {/*
@@ -132,14 +114,14 @@ export default function About({ projects }: { projects: AboutProjectItem[] }) {
         <div className="relative flex h-full w-full flex-col px-5 py-5 md:px-7 md:py-8">
           <div className="relative flex min-h-0 flex-1 flex-col md:flex-row md:items-stretch md:justify-between md:gap-10">
             {/* Desktop left column */}
-            <div className="relative hidden min-h-0 shrink-0 flex-col md:flex md:h-full md:w-[34%] md:max-w-[28rem]">
+            <div className="relative hidden min-h-0 shrink-0 flex-col md:flex md:h-full md:w-[34%] md:max-w-[28rem] 4xl:max-w-none 4xl:w-auto">
               {/* Spacer matching logo size so intro stays below the overlaid logo */}
-              <div className="h-[1.35rem]" aria-hidden />
-              <p className="mt-4 max-w-[20rem] md:max-w-[28rem] text-2xl leading-5 tracking-wide text-black">
+              <div className="h-[1.35rem] 4xl:h-8" aria-hidden />
+              <p className="mt-4 max-w-[20rem] text-2xl leading-5 tracking-wide text-black md:max-w-[28rem] 4xl:mt-6 4xl:max-w-none 4xl:whitespace-nowrap 4xl:text-3xl 4xl:leading-8">
                 is an architecture studio founded in 2021.
               </p>
 
-              <div className="mt-auto flex flex-col gap-0 pt-10 text-sm tracking-normal text-black">
+              <div className="mt-auto flex flex-col gap-0 pt-10 text-sm 4xl:text-2xl tracking-normal text-black">
                 {CONTACT_LINKS.map((link) => (
                   <a key={link.label} href={link.href} className="hover:opacity-60">
                     {link.label}
@@ -179,14 +161,14 @@ export default function About({ projects }: { projects: AboutProjectItem[] }) {
                           if (isDesktopViewport()) setActiveId(null)
                         }}
                       >
-                        <div className="text-sm font-normal tracking-wide md:text-sm">
+                        <div className="text-sm font-normal tracking-wide md:text-sm 4xl:text-2xl">
                           {projectNumber}:
                         </div>
-                        <div className="mt-0 text-sm font-normal tracking-wide md:text-sm">
+                        <div className="mt-0 text-sm font-normal tracking-wide md:text-sm 4xl:text-2xl">
                           {title}
                         </div>
                         {project.description ? (
-                          <p className="mt-0 w-[16rem] whitespace-pre-line text-sm leading-4 tracking-wide md:w-[25rem] md:text-sm md:leading-4">
+                          <p className="mt-0 w-[16rem] whitespace-pre-line text-sm leading-4 tracking-wide md:w-[25rem] md:text-sm md:leading-4 4xl:text-2xl 4xl:leading-8 4xl:w-[40rem]">
                             {project.description}
                           </p>
                         ) : null}
@@ -217,7 +199,7 @@ export default function About({ projects }: { projects: AboutProjectItem[] }) {
         <button
           type="button"
           aria-label="Close"
-          onClick={closeToHome}
+          onClick={leaveAbout}
           className="absolute right-5 top-5 z-50 shrink-0 hover:opacity-60 md:right-7 md:top-8"
         >
           <Image
@@ -230,7 +212,6 @@ export default function About({ projects }: { projects: AboutProjectItem[] }) {
             Close
           </span>
         </button>
-      </div>
     </div>
   )
 }

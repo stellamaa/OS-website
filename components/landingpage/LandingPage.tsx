@@ -40,11 +40,20 @@ export default function LandingPage({ landing }: { landing: LandingPageData | nu
         />
       ) : null}
 
-      <div className="pointer-events-none absolute inset-x-0 top-5 z-10 flex justify-center mix-blend-difference md:top-8">
-        <Image src={osLogo} alt="OS" priority className="h-4 w-auto md:h-[1.15rem]" />
+      <div className="pointer-events-none absolute inset-x-0 top-5 z-10 flex justify-center mix-blend-difference md:top-8 4xl:top-10 ">
+        <Image
+          src={osLogo}
+          alt="OS"
+          priority
+          className="h-4 w-auto md:h-[1.15rem] 4xl:h-9"
+        />
       </div>
 
-     
+      <div className="pointer-events-none absolute inset-x-0 bottom-[18%] z-10 flex justify-center px-6">
+        <p className="text-center text-[11px] tracking-wide text-white md:text-xs 4xl:text-2xl">
+          {enterText}
+        </p>
+      </div>
     </div>
   )
 }

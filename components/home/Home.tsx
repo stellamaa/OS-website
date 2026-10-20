@@ -4,6 +4,8 @@ import Image from 'next/image'
 import Link from 'next/link'
 import { useCallback, useEffect, useRef, useState } from 'react'
 
+import AboutLink from '@/components/AboutLink'
+import osLogo from '@/public/assets/og-logo.svg'
 import { imageSrc, type SanityImageField } from '@/sanity/lib/image'
 
 export type HomeSlide = {
@@ -39,19 +41,15 @@ export default function Home({ home }: { home: HomeData | null }) {
     const root = scrollRef.current
     if (!root || total === 0) return
 
+    // Switch when the next slide is about halfway into the viewport
+    // (its top edge has reached the vertical midpoint).
     const mid = root.scrollTop + root.clientHeight / 2
     let best = 0
-    let bestDist = Infinity
 
     const items = root.querySelectorAll<HTMLElement>('[data-slide-index]')
     for (const item of items) {
-      const top = item.offsetTop
-      const center = top + item.offsetHeight / 2
-      const dist = Math.abs(center - mid)
-      if (dist < bestDist) {
-        bestDist = dist
-        best = Number(item.dataset.slideIndex) || 0
-      }
+      const index = Number(item.dataset.slideIndex) || 0
+      if (item.offsetTop <= mid) best = index
     }
 
     setActiveIndex(best)
@@ -85,23 +83,25 @@ export default function Home({ home }: { home: HomeData | null }) {
 
   return (
     <div className="relative h-[100dvh] w-full overflow-hidden bg-black text-white">
-      <div className="pointer-events-none absolute inset-x-0 top-5 z-20 flex justify-center md:top-8">
-        <Link
-          href="/about"
-          className="pointer-events-auto text-sm font-bold tracking-wide text-white hover:opacity-60 md:text-base"
-        >
-          OS
-        </Link>
+      <div className="pointer-events-none absolute inset-x-0 top-5 z-20 flex justify-center mix-blend-difference md:top-8 4xl:top-10">
+        <AboutLink aria-label="About" className="pointer-events-auto hover:opacity-60">
+          <Image
+            src={osLogo}
+            alt=""
+            priority
+            className="h-4 w-auto md:h-[1.15rem] 4xl:h-9"
+          />
+        </AboutLink>
       </div>
 
       <div className="pointer-events-none absolute left-4 top-1/2 z-20 max-w-[40%] -translate-y-1/2 md:left-7">
-        <span className="block text-xs tracking-wide text-white md:text-sm">
+        <span className="block text-xs tracking-wide text-white md:text-sm 4xl:text-2xl">
           {activeTitle}
         </span>
       </div>
 
       <div className="pointer-events-none absolute right-4 top-1/2 z-20 -translate-y-1/2 md:right-7">
-        <span className="text-xs tracking-wide text-white md:text-sm">
+        <span className="text-xs tracking-wide text-white md:text-sm 4xl:text-2xl">
           {activeIndex + 1}/{total}
         </span>
       </div>

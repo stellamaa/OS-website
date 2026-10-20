@@ -29,6 +29,7 @@ jobs:
 
       - name: Set site base path
         run: |
+          echo "GITHUB_PAGES=true" >> "$GITHUB_ENV"
           REPO="${GITHUB_REPOSITORY#*/}"
           if [[ "$REPO" == *.github.io ]]; then
             echo "NEXT_PUBLIC_BASE_PATH=" >> "$GITHUB_ENV"

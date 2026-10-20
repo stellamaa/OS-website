@@ -12,7 +12,7 @@ export default function OficinaSateliteLogo({
       src={logo}
       alt="OFICINASATELITE"
       priority
-      className={`block h-[1.25rem] w-auto md:h-[1.15rem] ${className}`}
+      className={`block h-[1.25rem] w-auto md:h-[1.15rem] 4xl:h-8 ${className}`}
     />
   )
 }

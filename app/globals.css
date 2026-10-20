@@ -12,6 +12,11 @@
   --font-sans: var(--font-neue-haas);
 }
 
+/* Named breakpoints must use rem (same unit as Tailwind defaults) or variants won't sort/apply correctly */
+@theme {
+  --breakpoint-4xl: 125rem; /* 2000px at 16px root */
+}
+
 @media (prefers-color-scheme: dark) {
   :root {
     --background: #ffffff;
