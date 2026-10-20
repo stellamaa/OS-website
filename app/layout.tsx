@@ -54,6 +54,10 @@ const neueHaas = localFont({
 export const metadata: Metadata = {
   title: 'Oficina Satelite ',
   description: 'Architecture and Design Studio',
+  icons: {
+    icon: [{ url: '/favicon.png', sizes: '96x96', type: 'image/png' }],
+    apple: [{ url: '/favicon.png', sizes: '96x96', type: 'image/png' }],
+  },
 }
 
 export default function RootLayout({

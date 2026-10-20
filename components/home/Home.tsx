@@ -5,6 +5,7 @@ import Link from 'next/link'
 import { useCallback, useEffect, useRef, useState } from 'react'
 
 import AboutLink from '@/components/AboutLink'
+import AutoPlayVideo from '@/components/AutoPlayVideo'
 import osLogo from '@/public/assets/og-logo.svg'
 import { imageSrc, type SanityImageField } from '@/sanity/lib/image'
 
@@ -120,14 +121,11 @@ export default function Home({ home }: { home: HomeData | null }) {
           const posterSrc = imageSrc(slide.poster, { width: 1600, quality: 70 }) || undefined
 
           const media = isVideo ? (
-            <video
+            <AutoPlayVideo
               className="pointer-events-none block h-full w-full object-cover md:h-auto md:object-contain"
               src={slide.videoUrl!}
               poster={posterSrc}
-              autoPlay
-              muted
-              loop
-              playsInline
+              playKey={slide._key}
               preload={index === 0 ? 'auto' : 'metadata'}
               aria-label={alt}
             />

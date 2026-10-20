@@ -5,6 +5,7 @@ import Link from 'next/link'
 import { useCallback, useEffect, useRef, useState } from 'react'
 
 import AboutLink from '@/components/AboutLink'
+import AutoPlayVideo from '@/components/AutoPlayVideo'
 import osLogo from '@/public/assets/og-logo.svg'
 import { imageSrc, type SanityImageField } from '@/sanity/lib/image'
 
@@ -57,14 +58,11 @@ function ProjectVideo({
       : 'h-full w-full object-cover'
 
   return (
-    <video
+    <AutoPlayVideo
       className={className}
       src={src}
       poster={poster}
-      autoPlay
-      muted
-      loop
-      playsInline
+      playKey={src}
       preload={priority ? 'auto' : 'metadata'}
       aria-label={label}
       onLoadedMetadata={(e) => {
@@ -131,8 +129,21 @@ export default function ProjectDetail({ project }: { project: ProjectDetailData 
   const mediaTotal = mediaBlocks.length
   const firstMediaIndex = blocks.findIndex(isCountedMedia)
   const [activeIndex, setActiveIndex] = useState(firstMediaIndex >= 0 ? firstMediaIndex : 0)
+  const [entered, setEntered] = useState(false)
   const scrollRef = useRef<HTMLDivElement | null>(null)
   const isDesktop = useIsDesktop()
+
+  // Soft, quick fade so the first image doesn't pop in
+  useEffect(() => {
+    let inner = 0
+    const outer = requestAnimationFrame(() => {
+      inner = requestAnimationFrame(() => setEntered(true))
+    })
+    return () => {
+      cancelAnimationFrame(outer)
+      cancelAnimationFrame(inner)
+    }
+  }, [])
 
   const updateActiveFromScroll = useCallback(() => {
     const root = scrollRef.current
@@ -195,7 +206,13 @@ export default function ProjectDetail({ project }: { project: ProjectDetailData 
   }
 
   return (
-    <div className="relative h-[100dvh] w-full overflow-hidden bg-[#dedede]">
+    <div
+      className="relative h-[100dvh] w-full overflow-hidden bg-[#dedede]"
+      style={{
+        opacity: entered ? 1 : 0,
+        transition: 'opacity 480ms cubic-bezier(0.33, 1, 0.68, 1)',
+      }}
+    >
       <Link
         href="/home"
         className="absolute left-4 top-5 z-30 text-xs tracking-wide text-white mix-blend-difference hover:opacity-60 md:left-7 md:top-8 md:text-sm 4xl:text-2xl"
@@ -331,26 +348,39 @@ export default function ProjectDetail({ project }: { project: ProjectDetailData 
                 quality: 90,
               })
 
-          // Mobile: full width, natural aspect. Desktop landscape: edge-to-edge width,
-          // no crop (shows whole image — may letterbox top/bottom). Portrait: viewport-tall.
+          // Mobile: portrait fills 100vh; landscape centered in the viewport.
+          // Desktop: landscape full-width contain; portrait viewport-tall.
           if (!isDesktop) {
             return (
               <section
                 key={block._key}
                 data-block-index={index}
-                className="relative flex w-full shrink-0 snap-start snap-always items-center justify-center bg-[#dedede] leading-none"
+                className="relative flex h-[100dvh] w-full shrink-0 snap-start snap-always items-center justify-center bg-[#dedede] leading-none"
               >
                 {src ? (
-                  <Image
-                    src={src}
-                    alt={block.image?.alt || block.caption || project.title || ''}
-                    width={imgW}
-                    height={imgH}
-                    priority={index === 0}
-                    className="block h-auto w-full object-contain"
-                    style={{ objectPosition, width: '100%', height: 'auto' }}
-                    sizes="100vw"
-                  />
+                  isLandscape ? (
+                    <Image
+                      src={src}
+                      alt={block.image?.alt || block.caption || project.title || ''}
+                      width={imgW}
+                      height={imgH}
+                      priority={index === 0}
+                      className="block h-auto w-full object-contain"
+                      style={{ objectPosition, width: '100%', height: 'auto' }}
+                      sizes="100vw"
+                    />
+                  ) : (
+                    <Image
+                      src={src}
+                      alt={block.image?.alt || block.caption || project.title || ''}
+                      width={imgW}
+                      height={imgH}
+                      priority={index === 0}
+                      className="h-full w-full object-cover"
+                      style={{ objectPosition }}
+                      sizes="100vw"
+                    />
+                  )
                 ) : null}
               </section>
             )

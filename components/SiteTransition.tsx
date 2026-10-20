@@ -12,6 +12,7 @@ import { usePathname, useRouter } from 'next/navigation'
 
 const REVEAL_MS = 820
 const FADE_MS = 420
+const PROJECT_FADE_MS = 560
 
 type SiteTransitionValue = {
   goAbout: () => void
@@ -32,10 +33,19 @@ function isAboutPath(pathname: string) {
   return /\/about\/?$/.test(pathname)
 }
 
+function isProjectPath(pathname: string) {
+  return /\/projects\//.test(pathname)
+}
+
 export default function SiteTransition({ children }: { children: React.ReactNode }) {
   const router = useRouter()
   const pathname = usePathname()
   const onAbout = isAboutPath(pathname)
+  const onProject = isProjectPath(pathname)
+  const fadeMs = onProject ? PROJECT_FADE_MS : FADE_MS
+  const fadeEase = onProject
+    ? 'cubic-bezier(0.33, 1, 0.68, 1)'
+    : 'cubic-bezier(0.22, 1, 0.36, 1)'
 
   const [fadeIn, setFadeIn] = useState(onAbout)
   const [slideDown, setSlideDown] = useState(false)
@@ -131,10 +141,10 @@ export default function SiteTransition({ children }: { children: React.ReactNode
             opacity: onAbout || fadeIn ? 1 : 0,
             transform: slideDown ? 'translateY(100%)' : 'translateY(0)',
             transitionProperty: snap ? 'none' : slideDown ? 'transform' : 'opacity',
-            transitionDuration: snap ? '0ms' : slideDown ? `${REVEAL_MS}ms` : `${FADE_MS}ms`,
+            transitionDuration: snap ? '0ms' : slideDown ? `${REVEAL_MS}ms` : `${fadeMs}ms`,
             transitionTimingFunction: slideDown
               ? 'cubic-bezier(0.16, 1, 0.3, 1)'
-              : 'cubic-bezier(0.22, 1, 0.36, 1)',
+              : fadeEase,
           }}
         >
           {children}
