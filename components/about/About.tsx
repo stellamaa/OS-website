@@ -114,14 +114,14 @@ export default function About({ projects }: { projects: AboutProjectItem[] }) {
         <div className="relative flex h-full w-full flex-col px-5 py-5 md:px-7 md:py-8">
           <div className="relative flex min-h-0 flex-1 flex-col md:flex-row md:items-stretch md:justify-between md:gap-10">
             {/* Desktop left column */}
-            <div className="relative hidden min-h-0 shrink-0 flex-col md:flex md:h-full md:w-[34%] md:max-w-[28rem] 4xl:max-w-none 4xl:w-auto">
+            <div className="relative hidden min-h-0 shrink-0 flex-col md:flex md:h-full md:w-[34%] md:max-w-[28rem] 4xl:max-w-[52rem] 4xl:top-15 4xl:left-10">
               {/* Spacer matching logo size so intro stays below the overlaid logo */}
-              <div className="h-[1.35rem] 4xl:h-8" aria-hidden />
-              <p className="mt-4 max-w-[20rem] text-2xl leading-5 tracking-wide text-black md:max-w-[28rem] 4xl:mt-6 4xl:max-w-none 4xl:whitespace-nowrap 4xl:text-3xl 4xl:leading-8">
+              <div className="h-[1.35rem] 4xl:h-15" aria-hidden />
+              <p className="mt-4 max-w-[20rem] text-2xl leading-5 tracking-wide text-black md:max-w-[28rem] 4xl:max-w-[52rem] 4xl:text-5xl 4xl:leading-15">
                 is an architecture studio founded in 2021.
               </p>
 
-              <div className="mt-auto flex flex-col gap-0 pt-10 text-sm 4xl:text-2xl tracking-normal text-black">
+              <div className="mt-auto flex flex-col gap-0 pt-10 text-sm tracking-normal text-black 4xl:text-4xl 4xl:pb-12 4xl:pl-5">
                 {CONTACT_LINKS.map((link) => (
                   <a key={link.label} href={link.href} className="hover:opacity-60">
                     {link.label}
@@ -132,7 +132,7 @@ export default function About({ projects }: { projects: AboutProjectItem[] }) {
 
             <div
               ref={scrollRef}
-              className="about-projects-scroll relative min-h-0 flex-1 overflow-y-auto overscroll-contain md:ml-auto md:mr-10 md:h-full md:w-[38%] md:max-w-[34rem] md:shrink-0 md:pr-4"
+              className="about-projects-scroll relative min-h-0 flex-1 overflow-y-auto overscroll-contain md:ml-auto md:mr-10 md:h-full md:w-[38%] md:max-w-[34rem] md:shrink-0 md:pr-4 4xl:max-w-[50rem]"
             >
               <p className="max-w-[19rem] pt-10 text-3xl leading-8 tracking-wide text-black md:hidden">
                 is an architecture studio founded in 2021.
@@ -161,14 +161,14 @@ export default function About({ projects }: { projects: AboutProjectItem[] }) {
                           if (isDesktopViewport()) setActiveId(null)
                         }}
                       >
-                        <div className="text-sm font-normal tracking-wide md:text-sm 4xl:text-2xl">
+                        <div className="text-sm font-normal tracking-wide md:text-sm 4xl:text-4xl">
                           {projectNumber}:
                         </div>
-                        <div className="mt-0 text-sm font-normal tracking-wide md:text-sm 4xl:text-2xl">
+                        <div className="mt-0 text-sm font-normal tracking-wide md:text-sm 4xl:text-4xl">
                           {title}
                         </div>
                         {project.description ? (
-                          <p className="mt-0 w-[16rem] whitespace-pre-line text-sm leading-4 tracking-wide md:w-[25rem] md:text-sm md:leading-4 4xl:text-2xl 4xl:leading-8 4xl:w-[40rem]">
+                          <p className="mt-0 w-[16rem] whitespace-pre-line text-sm leading-4 tracking-wide md:w-[25rem] md:text-sm md:leading-4 4xl:w-[36rem] 4xl:text-4xl 4xl:leading-9">
                             {project.description}
                           </p>
                         ) : null}
@@ -208,7 +208,7 @@ export default function About({ projects }: { projects: AboutProjectItem[] }) {
             className="h-3 w-3 md:hidden"
             priority
           />
-          <span className="hidden text-[11px] tracking-wide text-black md:inline md:text-sm">
+          <span className="hidden text-[11px] tracking-wide text-black md:inline md:text-sm 4xl:text-4xl 4xl:pr-10">
             Close
           </span>
         </button>

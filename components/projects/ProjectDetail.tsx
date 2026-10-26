@@ -228,33 +228,33 @@ export default function ProjectDetail({ project }: { project: ProjectDetailData 
     >
       <Link
         href="/home"
-        className="absolute left-4 top-5 z-30 text-xs tracking-wide text-white mix-blend-difference hover:opacity-60 md:left-7 md:top-8 md:text-sm 4xl:text-2xl"
+        className="absolute left-4 top-5 z-30 text-xs tracking-wide text-white mix-blend-difference hover:opacity-60 md:left-7 md:top-8 md:text-sm 4xl:text-4xl 4xl:top-20 4xl:left-15"
       >
         Projects
       </Link>
 
-      <div className="absolute inset-x-0 top-5 z-20 flex justify-center mix-blend-difference md:top-8">
+      <div className="absolute inset-x-0 top-5 z-20 flex justify-center mix-blend-difference md:top-8 4xl:top-20">
         <AboutLink aria-label="About" className="hover:opacity-60">
-          <Image src={osLogo} alt="" priority className="h-4 w-auto md:h-[1.15rem] 4xl:h-9" />
+          <Image src={osLogo} alt="" priority className="h-4 w-auto md:h-[1.15rem] 4xl:h-12" />
         </AboutLink>
       </div>
 
       {!hideChrome ? (
         <>
           <div className="pointer-events-none absolute bottom-2 left-4 z-20 max-w-[40%] mix-blend-difference md:bottom-3 md:left-7">
-            <span className="block text-xs tracking-wide text-white md:text-sm 4xl:text-2xl">
+            <span className="block text-xs tracking-wide text-white md:text-sm 4xl:text-4xl">
               {projectName}
             </span>
           </div>
 
           <div className="pointer-events-none absolute inset-x-0 bottom-2 z-20 flex justify-center px-16 mix-blend-difference md:bottom-3">
-            <span className="block text-center text-xs tracking-wide text-white 4xl:text-2xl md:text-sm">
+            <span className="block text-center text-xs tracking-wide text-white 4xl:text-4xl md:text-sm">
               {activeCaption}
             </span>
           </div>
 
           <div className="pointer-events-none absolute bottom-2 right-4 z-20 mix-blend-difference md:bottom-3 md:right-7">
-            <span className="text-xs tracking-wide text-white md:text-sm 4xl:text-2xl">
+            <span className="text-xs tracking-wide text-white md:text-sm 4xl:text-4xl">
               {mediaIndex + 1}/{mediaTotal}
             </span>
           </div>
@@ -287,7 +287,7 @@ export default function ProjectDetail({ project }: { project: ProjectDetailData 
                 <p
                   className={
                     isDesktop
-                      ? 'max-w-[50rem] whitespace-pre-line text-center text-base leading-6 tracking-wide text-black 4xl:max-w-[75rem] 4xl:text-2xl 4xl:leading-8'
+                      ? 'max-w-[50rem] whitespace-pre-line text-center text-base leading-6 tracking-wide text-black 4xl:max-w-[95rem] 4xl:text-4xl 4xl:leading-13'
                       : 'max-w-md whitespace-pre-line text-center text-sm leading-5 tracking-wide text-black'
                   }
                 >
