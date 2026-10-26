@@ -4,7 +4,6 @@ import Image from 'next/image'
 import { useCallback, useEffect, useRef, useState } from 'react'
 
 import { useSiteTransition } from '@/components/SiteTransition'
-import closeButton from '@/public/assets/closeButton.png'
 import { imageSrc, type SanityImageField } from '@/sanity/lib/image'
 import OficinaSateliteLogo from './OficinaSateliteLogo'
 
@@ -200,15 +199,24 @@ export default function About({ projects }: { projects: AboutProjectItem[] }) {
           type="button"
           aria-label="Close"
           onClick={leaveAbout}
-          className="absolute right-5 top-5 z-50 shrink-0 hover:opacity-60 md:right-7 md:top-8"
+          className="absolute right-5 top-5 z-50 shrink-0 text-black hover:opacity-60 md:right-7 md:top-8"
         >
-          <Image
-            src={closeButton}
-            alt="Close"
-            className="h-3 w-3 md:hidden"
-            priority
-          />
-          <span className="hidden text-[11px] tracking-wide text-black md:inline md:text-sm 4xl:text-4xl 4xl:pr-10">
+          <svg
+            width="24"
+            height="24"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="1"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            aria-hidden
+            className="h-5 w-5 md:hidden"
+          >
+            <line x1="18" y1="6" x2="6" y2="18" />
+            <line x1="6" y1="6" x2="18" y2="18" />
+          </svg>
+          <span className="hidden text-[11px] tracking-wide md:inline md:text-sm 4xl:text-4xl 4xl:pr-10">
             Close
           </span>
         </button>
