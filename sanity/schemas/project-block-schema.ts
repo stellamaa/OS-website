@@ -30,6 +30,35 @@ const projectBlock = defineType({
       hidden: ({ parent }) => parent?.mediaType === 'text',
     }),
     defineField({
+      name: 'displayMode',
+      title: 'Display',
+      type: 'string',
+      description:
+        'Landscape: desktop full-bleed; mobile centered with white above & below. Portrait: full-bleed on desktop & mobile. Irregular: desktop viewport-tall / natural width; mobile full-width natural height (no letterboxing).',
+      options: {
+        list: [
+          { title: 'Landscape', value: 'landscape' },
+          { title: 'Portrait', value: 'portrait' },
+          { title: 'Irregular', value: 'irregular' },
+        ],
+        layout: 'radio',
+      },
+      initialValue: 'landscape',
+      hidden: ({ parent }) =>
+        parent?.mediaType !== 'image' && parent?.mediaType !== 'video',
+      validation: (rule) =>
+        rule.custom((value, context) => {
+          const parent = context.parent as { mediaType?: string } | undefined
+          if (
+            (parent?.mediaType === 'image' || parent?.mediaType === 'video') &&
+            !value
+          ) {
+            return 'Pick a display mode'
+          }
+          return true
+        }),
+    }),
+    defineField({
       name: 'image',
       title: 'Image',
       type: 'image',
@@ -102,18 +131,27 @@ const projectBlock = defineType({
   preview: {
     select: {
       mediaType: 'mediaType',
+      displayMode: 'displayMode',
       caption: 'caption',
       text: 'text',
       textMobile: 'textMobile',
       media: 'image',
     },
-    prepare: ({ mediaType, caption, text, textMobile, media }) => {
+    prepare: ({ mediaType, displayMode, caption, text, textMobile, media }) => {
       const typeLabel =
         mediaType === 'video' ? 'Video' : mediaType === 'text' ? 'Text' : 'Image'
+      const modeLabel =
+        displayMode === 'portrait'
+          ? 'Portrait'
+          : displayMode === 'irregular'
+            ? 'Irregular'
+            : displayMode === 'landscape'
+              ? 'Landscape'
+              : null
       const subtitle =
         mediaType === 'text'
           ? (text || textMobile || '').slice(0, 60)
-          : caption || typeLabel
+          : [modeLabel, caption].filter(Boolean).join(' · ') || typeLabel
       return {
         title: typeLabel,
         subtitle,

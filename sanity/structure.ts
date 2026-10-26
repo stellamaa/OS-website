@@ -7,8 +7,6 @@ const HIDDEN_TYPES = [
   'aboutProject',
   'homeSlide',
   'projectBlock',
-  'projectSpacer25',
-  'projectSpacer50',
 ]
 
 export const structure: StructureResolver = (S) =>

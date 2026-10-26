@@ -72,6 +72,7 @@ export const projectBySlugQuery = /* groq */ `
       _key,
       _type,
       mediaType,
+      displayMode,
       caption,
       text,
       textMobile,

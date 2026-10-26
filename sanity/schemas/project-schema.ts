@@ -23,11 +23,9 @@ const project = defineType({
       title: 'Page blocks',
       type: 'array',
       description:
-        'Full-viewport scroll: images, videos, text, or mobile-only empty space. Order here is the page order and counter.',
+        'Images, videos, and text. For each image/video pick Landscape, Portrait, or Irregular display.',
       of: [
         defineArrayMember({ type: 'projectBlock', title: 'Image / Video / Text' }),
-        defineArrayMember({ type: 'projectSpacer25' }),
-        defineArrayMember({ type: 'projectSpacer50' }),
       ],
       options: {
         sortable: true,
