@@ -134,7 +134,7 @@ export default function About({ projects }: { projects: AboutProjectItem[] }) {
               ref={scrollRef}
               className="about-projects-scroll relative min-h-0 flex-1 overflow-y-auto overscroll-contain md:ml-auto md:mr-10 md:h-full md:w-[38%] md:max-w-[34rem] md:shrink-0 md:pr-4"
             >
-              <p className="max-w-[19rem] pt-10 text-2xl leading-8 tracking-wide text-black md:hidden">
+              <p className="max-w-[19rem] pt-10 text-3xl leading-8 tracking-wide text-black md:hidden">
                 is an architecture studio founded in 2021.
               </p>
 
