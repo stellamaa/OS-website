@@ -34,7 +34,7 @@ const projectBlock = defineType({
       title: 'Display',
       type: 'string',
       description:
-        'Landscape: desktop full-bleed; mobile centered with white above & below. Portrait: full-bleed on desktop & mobile. Irregular: desktop viewport-tall / natural width; mobile full-width natural height (no letterboxing).',
+        'Landscape: desktop full-bleed; mobile centered with white above & below. Portrait: desktop viewport-tall / natural width; mobile full-bleed. Irregular: desktop viewport-tall / natural width; mobile full-width natural height (no letterboxing).',
       options: {
         list: [
           { title: 'Landscape', value: 'landscape' },

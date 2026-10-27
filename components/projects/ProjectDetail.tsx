@@ -73,9 +73,9 @@ function ProjectVideo({
     ? mode === 'portrait'
       ? 'h-full w-full object-cover'
       : 'block h-auto w-full object-contain'
-    : mode === 'irregular'
-      ? 'h-full w-auto max-w-full object-contain'
-      : 'h-full w-full object-cover'
+    : mode === 'landscape'
+      ? 'h-full w-full object-cover'
+      : 'h-full w-auto max-w-full object-contain'
 
   return (
     <AutoPlayVideo
@@ -339,12 +339,10 @@ export default function ProjectDetail({ project }: { project: ProjectDetailData 
               ? imageSrc(block.image, { width: 1600, quality: 90 })
               : mode === 'landscape' && isDesktop
                 ? imageSrc(block.image, { width: 3840, quality: 90 })
-                : mode === 'portrait'
-                  ? imageSrc(block.image, {
-                      width: isDesktop ? 2560 : 1600,
-                      quality: 90,
-                    })
+                : mode === 'portrait' && !isDesktop
+                  ? imageSrc(block.image, { width: 1600, quality: 90 })
                   : imageSrc(block.image, {
+                      // portrait/irregular desktop: tall as viewport; landscape mobile
                       width: isDesktop ? undefined : 1920,
                       height: isDesktop ? 2400 : undefined,
                       quality: 90,
@@ -354,7 +352,8 @@ export default function ProjectDetail({ project }: { project: ProjectDetailData 
 
           // Landscape — desktop: full-bleed cover
           //            mobile: centered in 100vh with white letterboxing
-          // Portrait  — full-bleed cover on desktop & mobile
+          // Portrait  — desktop: viewport-tall, natural width
+          //            mobile: full-bleed cover
           // Irregular — desktop: viewport-tall, natural width
           //            mobile: full width, natural height, no letterboxing
           if (!isDesktop) {
@@ -428,8 +427,8 @@ export default function ProjectDetail({ project }: { project: ProjectDetailData 
             )
           }
 
-          // Desktop — landscape & portrait: full-bleed; irregular: viewport-tall, natural width
-          if (mode === 'irregular') {
+          // Desktop — landscape: full-bleed; portrait & irregular: viewport-tall, natural width
+          if (mode === 'portrait' || mode === 'irregular') {
             return (
               <section
                 key={block._key}
