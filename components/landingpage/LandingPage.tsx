@@ -49,7 +49,7 @@ export default function LandingPage({ landing }: { landing: LandingPageData | nu
         />
       </div>
 
-      <div className="pointer-events-none absolute inset-x-0 bottom-[18%] z-10 flex justify-center px-6">
+      <div className="pointer-events-none absolute inset-x-0 bottom-[5%] z-10 flex justify-center px-6">
         <p className="text-center text-[11px] tracking-wide text-white md:text-xs 4xl:text-2xl">
           {enterText}
         </p>

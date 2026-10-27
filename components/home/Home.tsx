@@ -6,6 +6,7 @@ import { useCallback, useEffect, useRef, useState } from 'react'
 
 import AboutLink from '@/components/AboutLink'
 import AutoPlayVideo from '@/components/AutoPlayVideo'
+import { useSiteTransition } from '@/components/SiteTransition'
 import osLogo from '@/public/assets/og-logo.svg'
 import { imageSrc, type SanityImageField } from '@/sanity/lib/image'
 
@@ -33,10 +34,12 @@ function slideHasMedia(slide: HomeSlide) {
 }
 
 export default function Home({ home }: { home: HomeData | null }) {
+  const { goProject, projectChromeFlight } = useSiteTransition()
   const slides = (home?.slides ?? []).filter(slideHasMedia)
   const total = slides.length
   const [activeIndex, setActiveIndex] = useState(0)
   const scrollRef = useRef<HTMLDivElement | null>(null)
+  const hideChrome = Boolean(projectChromeFlight)
 
   const updateActiveFromScroll = useCallback(() => {
     const root = scrollRef.current
@@ -84,28 +87,34 @@ export default function Home({ home }: { home: HomeData | null }) {
 
   return (
     <div className="relative h-[100dvh] w-full overflow-hidden bg-black text-white">
-      <div className="pointer-events-none absolute inset-x-0 top-5 z-20 flex justify-center mix-blend-difference md:top-8 4xl:top-10">
-        <AboutLink aria-label="About" className="pointer-events-auto hover:opacity-60">
-          <Image
-            src={osLogo}
-            alt=""
-            priority
-            className="h-4 w-auto md:h-[1.15rem] 4xl:h-9"
-          />
-        </AboutLink>
-      </div>
+      {!hideChrome ? (
+        <div className="pointer-events-none absolute inset-x-0 top-5 z-20 flex justify-center mix-blend-difference md:top-8 4xl:top-10">
+          <AboutLink aria-label="About" className="pointer-events-auto hover:opacity-60">
+            <Image
+              src={osLogo}
+              alt=""
+              priority
+              className="h-4 w-auto md:h-[1.15rem] 4xl:h-9"
+            />
+          </AboutLink>
+        </div>
+      ) : null}
 
-      <div className="pointer-events-none absolute left-4 top-1/2 z-20 max-w-[40%] -translate-y-1/2 md:left-7">
-        <span className="block text-xs tracking-wide text-white md:text-sm 4xl:text-2xl">
-          {activeTitle}
-        </span>
-      </div>
+      {!hideChrome ? (
+        <>
+          <div className="pointer-events-none absolute left-4 top-1/2 z-20 max-w-[40%] -translate-y-1/2 md:left-7">
+            <span className="block text-xs tracking-wide mix-blend-difference md:text-sm 4xl:text-2xl">
+              {activeTitle}
+            </span>
+          </div>
 
-      <div className="pointer-events-none absolute right-4 top-1/2 z-20 -translate-y-1/2 md:right-7">
-        <span className="text-xs tracking-wide text-white md:text-sm 4xl:text-2xl">
-          {activeIndex + 1}/{total}
-        </span>
-      </div>
+          <div className="pointer-events-none absolute right-4 top-1/2 z-20 -translate-y-1/2 md:right-7">
+            <span className="text-xs tracking-wide mix-blend-difference md:text-sm 4xl:text-2xl">
+              {activeIndex + 1}/{total}
+            </span>
+          </div>
+        </>
+      ) : null}
 
       <div
         ref={scrollRef}
@@ -150,8 +159,31 @@ export default function Home({ home }: { home: HomeData | null }) {
               {href ? (
                 <Link
                   href={href}
+                  prefetch
                   className="block h-full w-full leading-none md:h-auto"
                   aria-label={slide.title || slide.project?.title || 'Open project'}
+                  onClick={(event) => {
+                    event.preventDefault()
+                    const title =
+                      slide.title?.trim() ||
+                      slide.project?.title?.trim() ||
+                      activeTitle
+                    const mediaEl = event.currentTarget.querySelector('img, video')
+                    const rect = mediaEl?.getBoundingClientRect()
+                    goProject(href, {
+                      title,
+                      counter: `${index + 1}/${total}`,
+                      bridgeSrc: isVideo ? posterSrc || imgSrc : imgSrc,
+                      bridgeRect: rect
+                        ? {
+                            top: rect.top,
+                            left: rect.left,
+                            width: rect.width,
+                            height: rect.height,
+                          }
+                        : null,
+                    })
+                  }}
                 >
                   {media}
                 </Link>

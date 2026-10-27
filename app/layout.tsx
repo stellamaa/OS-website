@@ -22,18 +22,13 @@ const neueHaas = localFont({
       style: 'normal',
     },
     {
-      path: '../public/fonts/NeueHaasDisplayLight.ttf',
+      path: '../public/fonts/NeueHaasDisplayRoman.ttf',
       weight: '400',
       style: 'normal',
     },
     {
-      path: '../public/fonts/NeueHaasDisplayRoman.ttf',
-      weight: '500',
-      style: 'normal',
-    },
-    {
       path: '../public/fonts/NeueHaasDisplayMediu.ttf',
-      weight: '600',
+      weight: '500',
       style: 'normal',
     },
     {
@@ -67,7 +62,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" className={`${neueHaas.variable} h-full antialiased`} suppressHydrationWarning>
-      <body className="min-h-full flex flex-col font-[family-name:var(--font-neue-haas)]" suppressHydrationWarning>
+      <body className="flex min-h-full flex-col font-[family-name:var(--font-neue-haas)] tracking-wide" suppressHydrationWarning>
         <Providers>{children}</Providers>
       </body>
     </html>

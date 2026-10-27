@@ -6,6 +6,7 @@ import { useCallback, useEffect, useRef, useState } from 'react'
 
 import AboutLink from '@/components/AboutLink'
 import AutoPlayVideo from '@/components/AutoPlayVideo'
+import { useSiteTransition } from '@/components/SiteTransition'
 import osLogo from '@/public/assets/og-logo.svg'
 import { imageSrc, type SanityImageField } from '@/sanity/lib/image'
 
@@ -137,17 +138,23 @@ function useIsDesktop() {
 }
 
 export default function ProjectDetail({ project }: { project: ProjectDetailData }) {
+  const { projectChromeFlight } = useSiteTransition()
   const blocks = (project.blocks ?? []).filter(blockIsValid)
   const mediaBlocks = blocks.filter(isCountedMedia)
   const mediaTotal = mediaBlocks.length
   const firstMediaIndex = blocks.findIndex(isCountedMedia)
   const [activeIndex, setActiveIndex] = useState(firstMediaIndex >= 0 ? firstMediaIndex : 0)
-  const [entered, setEntered] = useState(false)
+  const handoffChrome = Boolean(projectChromeFlight)
+  const [entered, setEntered] = useState(handoffChrome)
   const scrollRef = useRef<HTMLDivElement | null>(null)
   const isDesktop = useIsDesktop()
 
-  // Soft, quick fade so the first image doesn't pop in
+  // Soft fade on direct loads; skip when title/counter are already falling from home
   useEffect(() => {
+    if (handoffChrome) {
+      setEntered(true)
+      return
+    }
     let inner = 0
     const outer = requestAnimationFrame(() => {
       inner = requestAnimationFrame(() => setEntered(true))
@@ -156,7 +163,7 @@ export default function ProjectDetail({ project }: { project: ProjectDetailData 
       cancelAnimationFrame(outer)
       cancelAnimationFrame(inner)
     }
-  }, [])
+  }, [handoffChrome])
 
   const updateActiveFromScroll = useCallback(() => {
     const root = scrollRef.current
@@ -222,8 +229,10 @@ export default function ProjectDetail({ project }: { project: ProjectDetailData 
     <div
       className="relative h-[100dvh] w-full overflow-hidden bg-white"
       style={{
-        opacity: entered ? 1 : 0,
-        transition: 'opacity 480ms cubic-bezier(0.33, 1, 0.68, 1)',
+        opacity: entered || handoffChrome ? 1 : 0,
+        transition: handoffChrome
+          ? 'none'
+          : 'opacity 480ms cubic-bezier(0.33, 1, 0.68, 1)',
       }}
     >
       <Link
@@ -233,13 +242,15 @@ export default function ProjectDetail({ project }: { project: ProjectDetailData 
         Projects
       </Link>
 
-      <div className="absolute inset-x-0 top-5 z-20 flex justify-center mix-blend-difference md:top-8 4xl:top-20">
-        <AboutLink aria-label="About" className="hover:opacity-60">
-          <Image src={osLogo} alt="" priority className="h-4 w-auto md:h-[1.15rem] 4xl:h-12" />
-        </AboutLink>
-      </div>
+      {!handoffChrome ? (
+        <div className="absolute inset-x-0 top-5 z-20 flex justify-center mix-blend-difference md:top-8 4xl:top-10">
+          <AboutLink aria-label="About" className="hover:opacity-60">
+            <Image src={osLogo} alt="" priority className="h-4 w-auto md:h-[1.15rem] 4xl:h-9" />
+          </AboutLink>
+        </div>
+      ) : null}
 
-      {!hideChrome ? (
+      {!hideChrome && !handoffChrome ? (
         <>
           <div className="pointer-events-none absolute bottom-2 left-4 z-20 max-w-[40%] mix-blend-difference md:bottom-3 md:left-7">
             <span className="block text-xs tracking-wide text-white md:text-sm 4xl:text-4xl">
@@ -259,6 +270,15 @@ export default function ProjectDetail({ project }: { project: ProjectDetailData 
             </span>
           </div>
         </>
+      ) : null}
+
+      {/* Caption can appear while title/counter are still in the flying handoff */}
+      {!hideChrome && handoffChrome && activeCaption ? (
+        <div className="pointer-events-none absolute inset-x-0 bottom-2 z-20 flex justify-center px-16 mix-blend-difference md:bottom-3">
+          <span className="block text-center text-xs tracking-wide text-white 4xl:text-4xl md:text-sm">
+            {activeCaption}
+          </span>
+        </div>
       ) : null}
 
       <div
@@ -451,24 +471,24 @@ export default function ProjectDetail({ project }: { project: ProjectDetailData 
             )
           }
 
+          // Landscape desktop — full-bleed cover (sized img so first paint matches portrait handoff timing)
           return (
             <section
               key={block._key}
               data-block-index={index}
-              className="relative flex h-[100dvh] w-full shrink-0 snap-start snap-always items-center justify-center bg-white"
+              className="relative flex h-[100dvh] w-full shrink-0 snap-start snap-always items-center justify-center overflow-hidden bg-white"
             >
               {src ? (
-                <div className="relative h-full w-full">
-                  <Image
-                    src={src}
-                    alt={alt}
-                    fill
-                    priority={index === 0}
-                    className="object-cover"
-                    style={{ objectPosition }}
-                    sizes="100vw"
-                  />
-                </div>
+                <Image
+                  src={src}
+                  alt={alt}
+                  width={imgW}
+                  height={imgH}
+                  priority={index === 0}
+                  className="h-full w-full object-cover"
+                  style={{ objectPosition }}
+                  sizes="100vw"
+                />
               ) : null}
             </section>
           )

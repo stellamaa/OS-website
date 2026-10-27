@@ -120,7 +120,7 @@ export default function About({ projects }: { projects: AboutProjectItem[] }) {
                 is an architecture studio founded in 2021.
               </p>
 
-              <div className="mt-auto flex flex-col gap-0 pt-10 text-sm tracking-normal text-black 4xl:text-4xl 4xl:pb-12 4xl:pl-5">
+              <div className="mt-auto flex flex-col gap-0 pt-10 text-sm tracking-wide text-black 4xl:text-4xl 4xl:pb-12 4xl:pl-5">
                 {CONTACT_LINKS.map((link) => (
                   <a key={link.label} href={link.href} className="hover:opacity-60">
                     {link.label}
@@ -211,14 +211,11 @@ export default function About({ projects }: { projects: AboutProjectItem[] }) {
             strokeLinecap="round"
             strokeLinejoin="round"
             aria-hidden
-            className="h-5 w-5 md:hidden"
+            className="h-5 w-5 md:h-6 md:w-6 4xl:h-10 4xl:w-10"
           >
             <line x1="18" y1="6" x2="6" y2="18" />
             <line x1="6" y1="6" x2="18" y2="18" />
           </svg>
-          <span className="hidden text-[11px] tracking-wide md:inline md:text-sm 4xl:text-4xl 4xl:pr-10">
-            Close
-          </span>
         </button>
     </div>
   )
