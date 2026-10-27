@@ -207,7 +207,7 @@ export default function ProjectDetail({ project }: { project: ProjectDetailData 
   const activeBlock = blocks[activeIndex]
   const hideChrome = isChromeHiddenBlock(activeBlock)
   const activeCaption = hideChrome ? '' : activeBlock?.caption?.trim() || ''
-  const projectName = (project.title || '').toUpperCase()
+  const projectName = (project.title || '')
   const mediaIndex = mediaBlocks.findIndex((block) => block._key === activeBlock?._key)
 
   if (blocks.length === 0) {
