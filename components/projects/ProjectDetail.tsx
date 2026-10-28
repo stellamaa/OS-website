@@ -138,7 +138,7 @@ function useIsDesktop() {
 }
 
 export default function ProjectDetail({ project }: { project: ProjectDetailData }) {
-  const { projectChromeFlight } = useSiteTransition()
+  const { projectChromeFlight, leaveProject } = useSiteTransition()
   const blocks = (project.blocks ?? []).filter(blockIsValid)
   const mediaBlocks = blocks.filter(isCountedMedia)
   const mediaTotal = mediaBlocks.length
@@ -238,6 +238,10 @@ export default function ProjectDetail({ project }: { project: ProjectDetailData 
       <Link
         href="/home"
         className="absolute left-4 top-5 z-30 text-xs tracking-wide text-white mix-blend-difference hover:opacity-60 md:left-7 md:top-8 md:text-sm 4xl:text-4xl 4xl:top-20 4xl:left-15"
+        onClick={(event) => {
+          event.preventDefault()
+          leaveProject()
+        }}
       >
         Projects
       </Link>
