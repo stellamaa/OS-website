@@ -313,13 +313,13 @@ export default function ProjectDetail({ project }: { project: ProjectDetailData 
               <section
                 key={block._key}
                 data-block-index={index}
-                className="relative flex h-[100dvh] w-full shrink-0 snap-start snap-always items-center justify-start bg-white px-8 md:px-7"
+                className="relative flex h-[100dvh] w-full shrink-0 snap-start snap-always items-center md:justify-start bg-white px-8 md:px-7"
               >
                 <p
                   className={
                     isDesktop
                       ? 'max-w-[50rem] whitespace-pre-line text-left text-base leading-[1.3] tracking-wide text-black 4xl:max-w-[95rem] 4xl:text-4xl 4xl:leading-13'
-                      : 'max-w-md whitespace-pre-line text-center text-sm leading-5 tracking-wide text-black'
+                      : 'max-w-md whitespace-pre-line text-left text-sm leading-5 tracking-wide text-black'
                   }
                 >
                   {body}

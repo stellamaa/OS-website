@@ -116,9 +116,9 @@ export default function About({ projects }: { projects: AboutProjectItem[] }) {
             <div className="relative hidden min-h-0 shrink-0 flex-col md:flex md:h-full md:w-[34%] md:max-w-[28rem] 4xl:max-w-[52rem] 4xl:top-15 4xl:left-10">
               {/* Spacer matching logo size so intro stays below the overlaid logo */}
               <div className="h-[1.35rem] 4xl:h-15" aria-hidden />
-              <p className="mt-4 max-w-[20rem] text-2xl leading-5 tracking-wide text-black md:max-w-[28rem] 4xl:max-w-[52rem] 4xl:text-5xl 4xl:leading-15">
+              {/* <p className="mt-4 max-w-[20rem] text-2xl leading-5 tracking-wide text-black md:max-w-[28rem] 4xl:max-w-[52rem] 4xl:text-5xl 4xl:leading-15">
                 is an architecture studio founded in 2021.
-              </p>
+              </p> */}
 
               <div className="mt-auto flex flex-col gap-0 pt-10 text-sm tracking-wide text-black 4xl:text-4xl 4xl:pb-12 4xl:pl-5">
                 {CONTACT_LINKS.map((link) => (
@@ -133,13 +133,13 @@ export default function About({ projects }: { projects: AboutProjectItem[] }) {
               ref={scrollRef}
               className="about-projects-scroll relative min-h-0 flex-1 overflow-y-auto overscroll-contain md:ml-auto md:mr-10 md:h-full md:w-[38%] md:max-w-[34rem] md:shrink-0 md:pr-4 4xl:max-w-[50rem]"
             >
-              <p className="max-w-[25rem] pt-10 text-3xl leading-8 tracking-wide text-black md:hidden">
+              {/* <p className="max-w-[25rem] pt-10 text-3xl leading-8 tracking-wide text-black md:hidden">
                 is an architecture studio founded in 2021.
-              </p>
+              </p> */}
 
               <ul className="mt-8 flex flex-col gap-3 pb-24 md:mt-0 md:gap-4 md:pb-4">
                 {projects.map((project, index) => {
-                  const title = (project.title || 'Untitled').toUpperCase()
+                  const title = (project.title || 'Untitled')
                   const projectNumber = String(index + 1).padStart(3, '0')
 
                   return (
@@ -160,10 +160,10 @@ export default function About({ projects }: { projects: AboutProjectItem[] }) {
                           if (isDesktopViewport()) setActiveId(null)
                         }}
                       >
-                        <div className="text-sm font-normal tracking-wide md:text-sm 4xl:text-4xl">
+                        <div className="text-sm font-medium tracking-wide md:text-sm 4xl:text-4xl">
                           {projectNumber}:
                         </div>
-                        <div className="mt-0 text-sm font-normal tracking-wide md:text-sm 4xl:text-4xl">
+                        <div className="mt-0 text-sm font-medium tracking-wide md:text-sm 4xl:text-4xl">
                           {title}
                         </div>
                         {project.description ? (
