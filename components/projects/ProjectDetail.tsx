@@ -6,7 +6,10 @@ import { useCallback, useEffect, useRef, useState } from 'react'
 
 import AboutLink from '@/components/AboutLink'
 import AutoPlayVideo from '@/components/AutoPlayVideo'
-import { useSiteTransition } from '@/components/SiteTransition'
+import {
+  SITE_TRANSITIONS_ENABLED,
+  useSiteTransition,
+} from '@/components/SiteTransition'
 import osLogo from '@/public/assets/og-logo.svg'
 import { imageSrc, type SanityImageField } from '@/sanity/lib/image'
 
@@ -144,14 +147,14 @@ export default function ProjectDetail({ project }: { project: ProjectDetailData 
   const mediaTotal = mediaBlocks.length
   const firstMediaIndex = blocks.findIndex(isCountedMedia)
   const [activeIndex, setActiveIndex] = useState(firstMediaIndex >= 0 ? firstMediaIndex : 0)
-  const handoffChrome = Boolean(projectChromeFlight)
-  const [entered, setEntered] = useState(handoffChrome)
+  const handoffChrome = SITE_TRANSITIONS_ENABLED && Boolean(projectChromeFlight)
+  const [entered, setEntered] = useState(!SITE_TRANSITIONS_ENABLED || handoffChrome)
   const scrollRef = useRef<HTMLDivElement | null>(null)
   const isDesktop = useIsDesktop()
 
   // Soft fade on direct loads; skip when title/counter are already falling from home
   useEffect(() => {
-    if (handoffChrome) {
+    if (!SITE_TRANSITIONS_ENABLED || handoffChrome) {
       setEntered(true)
       return
     }
@@ -228,12 +231,16 @@ export default function ProjectDetail({ project }: { project: ProjectDetailData 
   return (
     <div
       className="relative h-[100dvh] w-full overflow-hidden bg-white"
-      style={{
-        opacity: entered || handoffChrome ? 1 : 0,
-        transition: handoffChrome
-          ? 'none'
-          : 'opacity 480ms cubic-bezier(0.33, 1, 0.68, 1)',
-      }}
+      style={
+        SITE_TRANSITIONS_ENABLED
+          ? {
+              opacity: entered || handoffChrome ? 1 : 0,
+              transition: handoffChrome
+                ? 'none'
+                : 'opacity 480ms cubic-bezier(0.33, 1, 0.68, 1)',
+            }
+          : undefined
+      }
     >
       <Link
         href="/home"

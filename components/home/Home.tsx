@@ -6,7 +6,10 @@ import { useCallback, useEffect, useLayoutEffect, useRef, useState } from 'react
 
 import AboutLink from '@/components/AboutLink'
 import AutoPlayVideo from '@/components/AutoPlayVideo'
-import { useSiteTransition } from '@/components/SiteTransition'
+import {
+  SITE_TRANSITIONS_ENABLED,
+  useSiteTransition,
+} from '@/components/SiteTransition'
 import osLogo from '@/public/assets/og-logo.svg'
 import { imageSrc, type SanityImageField } from '@/sanity/lib/image'
 
@@ -46,8 +49,11 @@ export default function Home({ home }: { home: HomeData | null }) {
   const [activeIndex, setActiveIndex] = useState(0)
   const [returnSlideIndex, setReturnSlideIndex] = useState<number | null>(null)
   const scrollRef = useRef<HTMLDivElement | null>(null)
+  const pinTopRef = useRef<number | null>(null)
+  const returnFinishedRef = useRef(false)
   const hideChrome = Boolean(projectChromeFlight)
   const returning = projectChromeFlight?.direction === 'up'
+  const pinning = returnSlideIndex != null
 
   const updateActiveFromScroll = useCallback(() => {
     const root = scrollRef.current
@@ -67,74 +73,129 @@ export default function Home({ home }: { home: HomeData | null }) {
     setActiveIndex(best)
   }, [total])
 
-  // Restore the exact slide you left when returning from a project,
-  // then pin it under the bridge so removing the overlay doesn't jump.
+  const mediaAt = useCallback((index: number) => {
+    const root = scrollRef.current
+    if (!root) return null
+    const slide = root.querySelector<HTMLElement>(`[data-slide-index="${index}"]`)
+    return slide?.querySelector<HTMLElement>('img, video') ?? null
+  }, [])
+
+  const mediaReady = useCallback((media: HTMLElement | null) => {
+    if (!media) return false
+    if (media instanceof HTMLImageElement) {
+      return media.complete && media.naturalWidth > 0
+    }
+    if (media instanceof HTMLVideoElement) {
+      return media.readyState >= 1 || Boolean(media.poster)
+    }
+    return true
+  }, [])
+
+  const priorsReady = useCallback(
+    (slideIndex: number) => {
+      for (let i = 0; i <= slideIndex; i++) {
+        if (!mediaReady(mediaAt(i))) return false
+      }
+      return true
+    },
+    [mediaAt, mediaReady],
+  )
+
+  // Capture restore payload; with transitions on, pin under the bridge until layout settles.
   useLayoutEffect(() => {
     if (!homeScrollRestore || !scrollRef.current) return
     const restore = homeScrollRestore
-    const root = scrollRef.current
-    root.scrollTop = restore.scrollTop
+    scrollRef.current.scrollTop = restore.scrollTop
     setActiveIndex(restore.slideIndex)
-    setReturnSlideIndex(restore.slideIndex)
     clearHomeScrollRestore()
 
-    let cancelled = false
-    let tries = 0
-
-    const mediaOf = () => {
-      const slide = root.querySelector<HTMLElement>(
-        `[data-slide-index="${restore.slideIndex}"]`,
-      )
-      return slide?.querySelector<HTMLElement>('img, video') ?? null
+    if (!SITE_TRANSITIONS_ENABLED) {
+      requestAnimationFrame(() => {
+        if (!scrollRef.current) return
+        scrollRef.current.scrollTop = restore.scrollTop
+        updateActiveFromScroll()
+      })
+      return
     }
 
-    const align = () => {
-      if (cancelled || !scrollRef.current) return
-      const media = mediaOf()
-      if (media && restore.bridgeRect) {
-        const dy = media.getBoundingClientRect().top - restore.bridgeRect.top
+    setReturnSlideIndex(restore.slideIndex)
+    pinTopRef.current = restore.bridgeRect?.top ?? null
+    returnFinishedRef.current = false
+  }, [homeScrollRestore, clearHomeScrollRestore, updateActiveFromScroll])
+
+  // Keep the target media locked to the bridge Y while layout (images above) settles,
+  // and for a short window after the overlay clears so late loads don't jump.
+  useLayoutEffect(() => {
+    if (!SITE_TRANSITIONS_ENABLED) return
+    if (returnSlideIndex == null || pinTopRef.current == null) return
+    const root = scrollRef.current
+    if (!root) return
+
+    let raf = 0
+    let stableFrames = 0
+    let settleFrames = 0
+    let bridgeReleased = false
+
+    const tick = () => {
+      const media = mediaAt(returnSlideIndex)
+      const pinTop = pinTopRef.current
+      if (media && pinTop != null) {
+        const dy = media.getBoundingClientRect().top - pinTop
         if (Math.abs(dy) > 0.5) {
-          scrollRef.current.scrollTop += dy
+          root.scrollTop += dy
+          stableFrames = 0
+        } else {
+          stableFrames += 1
         }
       }
-      tries += 1
-      const ready =
-        media instanceof HTMLImageElement
-          ? media.complete && media.naturalWidth > 0
-          : media instanceof HTMLVideoElement
-            ? media.readyState >= 1 || Boolean(media.poster)
-            : Boolean(media)
-      const aligned =
-        media &&
-        restore.bridgeRect &&
-        Math.abs(media.getBoundingClientRect().top - restore.bridgeRect.top) < 1
 
-      if ((ready && aligned) || tries > 45) {
+      const ready =
+        mediaReady(media) && priorsReady(returnSlideIndex) && stableFrames >= 4
+
+      if (!returnFinishedRef.current && ready) {
+        returnFinishedRef.current = true
         updateActiveFromScroll()
         finishHomeReturn()
-        return
       }
-      requestAnimationFrame(align)
+
+      // After the flying chrome unmounts, keep pinning briefly for late reflows
+      if (returnFinishedRef.current && !projectChromeFlight) {
+        if (!bridgeReleased) {
+          bridgeReleased = true
+          settleFrames = 0
+        }
+        settleFrames += 1
+        if (settleFrames > 45 && stableFrames >= 4) {
+          setReturnSlideIndex(null)
+          pinTopRef.current = null
+          return
+        }
+      }
+
+      raf = requestAnimationFrame(tick)
     }
 
-    requestAnimationFrame(align)
-    return () => {
-      cancelled = true
-    }
-  }, [homeScrollRestore, clearHomeScrollRestore, updateActiveFromScroll, finishHomeReturn])
+    raf = requestAnimationFrame(tick)
+    return () => cancelAnimationFrame(raf)
+  }, [
+    returnSlideIndex,
+    projectChromeFlight,
+    mediaAt,
+    mediaReady,
+    priorsReady,
+    updateActiveFromScroll,
+    finishHomeReturn,
+  ])
 
   // If we landed mid-return without a restore payload, still release the bridge
   useEffect(() => {
+    if (!SITE_TRANSITIONS_ENABLED) return
     if (!returning || homeScrollRestore) return
     if (returnSlideIndex == null) {
       const id = window.setTimeout(() => finishHomeReturn(), 120)
       return () => window.clearTimeout(id)
     }
   }, [returning, homeScrollRestore, returnSlideIndex, finishHomeReturn])
-
-  useEffect(() => {
-    if (!returning) setReturnSlideIndex(null)
-  }, [returning])
 
   useEffect(() => {
     const root = scrollRef.current
@@ -195,7 +256,11 @@ export default function Home({ home }: { home: HomeData | null }) {
 
       <div
         ref={scrollRef}
-        className="h-full w-full snap-y snap-mandatory overflow-y-auto overscroll-none md:snap-none"
+        className={
+          pinning
+            ? 'h-full w-full overflow-y-auto overscroll-none'
+            : 'h-full w-full snap-y snap-mandatory overflow-y-auto overscroll-none md:snap-none'
+        }
       >
         {slides.map((slide, index) => {
           const slug = slide.project?.slug
@@ -207,13 +272,15 @@ export default function Home({ home }: { home: HomeData | null }) {
           const posterSrc = imageSrc(slide.poster, { width: 1600, quality: 70 }) || undefined
 
           const isReturnTarget = returnSlideIndex === index
+          const preloadForReturn =
+            returnSlideIndex != null && index <= returnSlideIndex
           const media = isVideo ? (
             <AutoPlayVideo
               className="pointer-events-none block h-full w-full object-cover md:h-auto md:object-contain"
               src={slide.videoUrl!}
               poster={posterSrc}
               playKey={slide._key}
-              preload={index === 0 || isReturnTarget ? 'auto' : 'metadata'}
+              preload={index === 0 || preloadForReturn ? 'auto' : 'metadata'}
               aria-label={alt}
             />
           ) : imgSrc ? (
@@ -222,7 +289,7 @@ export default function Home({ home }: { home: HomeData | null }) {
               alt={alt}
               width={2560}
               height={1600}
-              priority={index === 0 || isReturnTarget}
+              priority={index === 0 || preloadForReturn}
               className="block h-full w-full object-cover md:h-auto md:w-full md:object-contain"
               sizes="100vw"
             />
@@ -233,7 +300,11 @@ export default function Home({ home }: { home: HomeData | null }) {
               key={slide._key}
               data-slide-index={index}
               data-home-return-slide={isReturnTarget ? 'true' : undefined}
-              className="relative h-[100dvh] w-full shrink-0 snap-start snap-always leading-none md:h-auto md:snap-align-none"
+              className={
+                pinning
+                  ? 'relative h-[100dvh] w-full shrink-0 leading-none md:h-auto'
+                  : 'relative h-[100dvh] w-full shrink-0 snap-start snap-always leading-none md:h-auto md:snap-align-none'
+              }
             >
               {href ? (
                 <Link

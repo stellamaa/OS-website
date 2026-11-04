@@ -16,8 +16,13 @@ import { usePathname, useRouter } from 'next/navigation'
 import AboutLink from '@/components/AboutLink'
 import osLogo from '@/public/assets/og-logo.svg'
 
+/** Flip to true to restore About slide + project fall/fade handoffs */
+export const SITE_TRANSITIONS_ENABLED = false
+
 const REVEAL_MS = 600
 const FADE_MS = 420
+/** About entry after the cover slide — soft land on white */
+const ABOUT_FADE_MS = 520
 /**
  * Click → fade almost immediately; letters fall/rise over the dissolve with mix-blend.
  */
@@ -188,8 +193,16 @@ export default function SiteTransition({ children }: { children: React.ReactNode
   const onAbout = isAboutPath(pathname)
   const onProject = isProjectPath(pathname)
   const onHome = isHomePath(pathname)
-  const fadeMs = onProject ? PROJECT_CROSSFADE_MS : FADE_MS
-  const fadeEase = onProject ? CROSSFADE_EASE : 'cubic-bezier(0.22, 1, 0.36, 1)'
+  const fadeMs = onProject
+    ? PROJECT_CROSSFADE_MS
+    : onAbout
+      ? ABOUT_FADE_MS
+      : FADE_MS
+  const fadeEase = onProject
+    ? CROSSFADE_EASE
+    : onAbout
+      ? 'cubic-bezier(0.22, 0.1, 0.25, 1)'
+      : 'cubic-bezier(0.22, 1, 0.36, 1)'
 
   const [fadeIn, setFadeIn] = useState(onAbout)
   const [slideDown, setSlideDown] = useState(false)
@@ -282,6 +295,17 @@ export default function SiteTransition({ children }: { children: React.ReactNode
   }, [runBridgeOpacity])
 
   useEffect(() => {
+    if (!SITE_TRANSITIONS_ENABLED) {
+      projectHandoffRef.current = false
+      homeReturnHandoffRef.current = false
+      busyRef.current = false
+      setSlideDown(false)
+      setPlate('none')
+      setSnap(true)
+      setFadeIn(true)
+      return
+    }
+
     // Project handoff: don't snap/toggle page opacity — keep bridge covering until dissolve
     if (projectHandoffRef.current && onProject) {
       projectHandoffRef.current = false
@@ -312,17 +336,13 @@ export default function SiteTransition({ children }: { children: React.ReactNode
       requestAnimationFrame(() => setSnap(false))
     })
 
-    if (onAbout) {
-      setFadeIn(true)
-      return () => cancelAnimationFrame(clearSnap)
-    }
-
     if (skipFadeRef.current) {
       skipFadeRef.current = false
       setFadeIn(true)
       return () => cancelAnimationFrame(clearSnap)
     }
 
+    // About (and normal routes): fade content in after the cover slide clears
     setFadeIn(false)
     const id = requestAnimationFrame(() => {
       requestAnimationFrame(() => setFadeIn(true))
@@ -370,55 +390,68 @@ export default function SiteTransition({ children }: { children: React.ReactNode
     setProjectChromeFlight(null)
   }, [cancelBridgeFade])
 
-  const tryFinishHomeReturn = useCallback(() => {
-    if (!returnMinTimeDoneRef.current || !returnHomeReadyRef.current) return
-    clearProjectChromeFlight()
-  }, [clearProjectChromeFlight])
-
-  const finishHomeReturn = useCallback(() => {
-    returnHomeReadyRef.current = true
-    // Snap bridge pixels to the live home media so the unmount is seamless
+  const snapReturnBridgeToLive = useCallback(() => {
     const bridge = bridgeLayerRef.current
     const img = bridge?.querySelector('img')
     const live = document
       .querySelector<HTMLElement>('[data-home-return-slide="true"]')
       ?.querySelector<HTMLElement>('img, video')
-    if (bridge && img && live) {
-      const rect = live.getBoundingClientRect()
-      img.style.top = `${rect.top}px`
-      img.style.left = `${rect.left}px`
-      img.style.width = `${rect.width}px`
-      img.style.height = `${rect.height}px`
-    }
+    if (!bridge || !img || !live) return
+    const rect = live.getBoundingClientRect()
+    img.style.top = `${rect.top}px`
+    img.style.left = `${rect.left}px`
+    img.style.width = `${rect.width}px`
+    img.style.height = `${rect.height}px`
+  }, [])
+
+  const tryFinishHomeReturn = useCallback(() => {
+    if (!returnMinTimeDoneRef.current || !returnHomeReadyRef.current) return
+    // Final pixel match on the frame we drop the overlay
+    snapReturnBridgeToLive()
+    clearProjectChromeFlight()
+  }, [clearProjectChromeFlight, snapReturnBridgeToLive])
+
+  const finishHomeReturn = useCallback(() => {
+    returnHomeReadyRef.current = true
+    snapReturnBridgeToLive()
     tryFinishHomeReturn()
-  }, [tryFinishHomeReturn])
+  }, [tryFinishHomeReturn, snapReturnBridgeToLive])
 
   const clearHomeScrollRestore = useCallback(() => {
     setHomeScrollRestore(null)
   }, [])
 
   const goAbout = useCallback(() => {
-    if (busyRef.current || onAbout) return
+    if (onAbout) return
+    if (!SITE_TRANSITIONS_ENABLED) {
+      router.push('/about')
+      return
+    }
+    if (busyRef.current) return
     busyRef.current = true
     setPlate('about')
     requestAnimationFrame(() => {
       requestAnimationFrame(() => setSlideDown(true))
     })
+    // Let About fade in after the slide+fade cover — don't skip the entrance fade
     window.setTimeout(() => {
-      skipFadeRef.current = true
       router.push('/about')
     }, REVEAL_MS)
   }, [onAbout, router])
 
   const leaveAbout = useCallback(() => {
-    if (busyRef.current || !onAbout) return
+    if (!onAbout) return
+    if (!SITE_TRANSITIONS_ENABLED) {
+      router.push('/home')
+      return
+    }
+    if (busyRef.current) return
     busyRef.current = true
     setPlate('home')
     requestAnimationFrame(() => {
       requestAnimationFrame(() => setSlideDown(true))
     })
     window.setTimeout(() => {
-      skipFadeRef.current = true
       router.push('/home')
     }, REVEAL_MS)
   }, [onAbout, router])
@@ -435,14 +468,7 @@ export default function SiteTransition({ children }: { children: React.ReactNode
         slideIndex?: number
       },
     ) => {
-      if (busyRef.current) return
-      busyRef.current = true
-      projectHandoffRef.current = true
-
-      if (chromeNavTimerRef.current != null) window.clearTimeout(chromeNavTimerRef.current)
-      if (chromeClearTimerRef.current != null) window.clearTimeout(chromeClearTimerRef.current)
-      cancelBridgeFade()
-
+      // Always remember where we left home so Projects can restore scroll
       homeReturnRef.current = {
         scrollTop: chrome.scrollTop ?? 0,
         slideIndex: chrome.slideIndex ?? 0,
@@ -451,6 +477,19 @@ export default function SiteTransition({ children }: { children: React.ReactNode
         bridgeSrc: chrome.bridgeSrc,
         bridgeRect: chrome.bridgeRect,
       }
+
+      if (!SITE_TRANSITIONS_ENABLED) {
+        router.push(href)
+        return
+      }
+
+      if (busyRef.current) return
+      busyRef.current = true
+      projectHandoffRef.current = true
+
+      if (chromeNavTimerRef.current != null) window.clearTimeout(chromeNavTimerRef.current)
+      if (chromeClearTimerRef.current != null) window.clearTimeout(chromeClearTimerRef.current)
+      cancelBridgeFade()
 
       router.prefetch(href)
 
@@ -477,8 +516,16 @@ export default function SiteTransition({ children }: { children: React.ReactNode
   )
 
   const leaveProject = useCallback(() => {
-    if (busyRef.current || !onProject) return
+    if (!onProject) return
     const saved = homeReturnRef.current
+
+    if (!SITE_TRANSITIONS_ENABLED) {
+      if (saved) setHomeScrollRestore(saved)
+      router.push('/home')
+      return
+    }
+
+    if (busyRef.current) return
     if (!saved) {
       router.push('/home')
       return
@@ -586,20 +633,29 @@ export default function SiteTransition({ children }: { children: React.ReactNode
 
         <div
           className="relative z-10 min-h-full flex-1"
-          style={{
-            opacity: onAbout || fadeIn ? 1 : 0,
-            transform: slideDown ? 'translateY(100%)' : 'translateY(0)',
-            transitionProperty: snap ? 'none' : slideDown ? 'transform' : 'opacity',
-            transitionDuration: snap ? '0ms' : slideDown ? `${REVEAL_MS}ms` : `${fadeMs}ms`,
-            transitionTimingFunction: slideDown
-              ? 'cubic-bezier(0.16, 1, 0.3, 1)'
-              : fadeEase,
-          }}
+          style={
+            SITE_TRANSITIONS_ENABLED
+              ? {
+                  opacity: slideDown ? 0 : fadeIn ? 1 : 0,
+                  transform: slideDown ? 'translateY(100%)' : 'translateY(0)',
+                  // Slide and fade together on the way to/from About
+                  transitionProperty: snap ? 'none' : 'transform, opacity',
+                  transitionDuration: snap
+                    ? '0ms'
+                    : slideDown
+                      ? `${REVEAL_MS}ms`
+                      : `${fadeMs}ms`,
+                  transitionTimingFunction: slideDown
+                    ? 'cubic-bezier(0.22, 0.1, 0.25, 1)'
+                    : fadeEase,
+                }
+              : undefined
+          }
         >
           {children}
         </div>
 
-        {projectChromeFlight ? (
+        {SITE_TRANSITIONS_ENABLED && projectChromeFlight ? (
           <div
             ref={bridgeLayerRef}
             className="pointer-events-none fixed inset-0 z-40"
@@ -638,7 +694,7 @@ export default function SiteTransition({ children }: { children: React.ReactNode
           </div>
         ) : null}
 
-        {projectChromeFlight ? (
+        {SITE_TRANSITIONS_ENABLED && projectChromeFlight ? (
           <div className="pointer-events-none fixed inset-x-0 top-5 z-[45] flex justify-center mix-blend-difference md:top-8 4xl:top-10">
             <AboutLink aria-label="About" className="pointer-events-auto hover:opacity-60">
               <Image
@@ -651,7 +707,7 @@ export default function SiteTransition({ children }: { children: React.ReactNode
           </div>
         ) : null}
 
-        {projectChromeFlight ? (
+        {SITE_TRANSITIONS_ENABLED && projectChromeFlight ? (
           <FallingChrome
             key={flightRunId}
             runId={flightRunId}
