@@ -701,7 +701,7 @@ export default function SiteTransition({ children }: { children: React.ReactNode
                 src={osLogo}
                 alt=""
                 priority
-                className="h-5 w-auto md:h-[1.35rem] 4xl:h-10"
+                className="h-6 w-auto md:h-6 4xl:h-11"
               />
             </AboutLink>
           </div>
