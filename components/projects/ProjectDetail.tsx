@@ -244,7 +244,7 @@ export default function ProjectDetail({ project }: { project: ProjectDetailData 
     >
       <Link
         href="/home"
-        className="absolute left-4 top-5 z-30 text-xs tracking-wide text-white mix-blend-difference hover:opacity-60 md:left-7 md:top-8 md:text-sm 4xl:text-4xl 4xl:top-20 4xl:left-15"
+        className="absolute left-4 top-5 z-30 text-xs tracking-wide text-white mix-blend-difference hover:opacity-60 md:left-7 md:top-8 md:text-xs 4xl:text-4xl 4xl:top-20 4xl:left-15"
         onClick={(event) => {
           event.preventDefault()
           leaveProject()
@@ -256,7 +256,7 @@ export default function ProjectDetail({ project }: { project: ProjectDetailData 
       {!handoffChrome ? (
         <div className="absolute inset-x-0 top-5 z-20 flex justify-center mix-blend-difference md:top-8 4xl:top-10">
           <AboutLink aria-label="About" className="hover:opacity-60">
-            <Image src={osLogo} alt="" priority className="h-4 w-auto md:h-[1.15rem] 4xl:h-9" />
+            <Image src={osLogo} alt="" priority className="h-5 w-auto md:h-[1.35rem] 4xl:h-10" />
           </AboutLink>
         </div>
       ) : null}
@@ -264,7 +264,7 @@ export default function ProjectDetail({ project }: { project: ProjectDetailData 
       {!hideChrome && !handoffChrome ? (
         <>
           <div className="pointer-events-none absolute bottom-2 left-4 z-20 max-w-[40%] mix-blend-difference md:bottom-3 md:left-7">
-            <span className="block text-xs tracking-wide text-white md:text-sm 4xl:text-4xl">
+            <span className="block text-xs tracking-wide text-white md:text-xs 4xl:text-4xl">
               {projectName}
             </span>
           </div>
@@ -276,7 +276,7 @@ export default function ProjectDetail({ project }: { project: ProjectDetailData 
           </div>
 
           <div className="pointer-events-none absolute bottom-2 right-4 z-20 mix-blend-difference md:bottom-3 md:right-7">
-            <span className="text-xs tracking-wide text-white md:text-sm 4xl:text-4xl">
+            <span className="text-xs tracking-wide text-white md:text-xs 4xl:text-4xl">
               {mediaIndex + 1}/{mediaTotal}
             </span>
           </div>
@@ -286,7 +286,7 @@ export default function ProjectDetail({ project }: { project: ProjectDetailData 
       {/* Caption can appear while title/counter are still in the flying handoff */}
       {!hideChrome && handoffChrome && activeCaption ? (
         <div className="pointer-events-none absolute inset-x-0 bottom-2 z-20 flex justify-center px-16 mix-blend-difference md:bottom-3">
-          <span className="block text-center text-xs tracking-wide text-white 4xl:text-4xl md:text-sm">
+          <span className="block text-center text-xs tracking-wide text-white 4xl:text-4xl md:text-xs">
             {activeCaption}
           </span>
         </div>
@@ -313,12 +313,12 @@ export default function ProjectDetail({ project }: { project: ProjectDetailData 
               <section
                 key={block._key}
                 data-block-index={index}
-                className="relative flex h-[100dvh] w-full shrink-0 snap-start snap-always items-center justify-center bg-white px-8 md:px-16"
+                className="relative flex h-[100dvh] w-full shrink-0 snap-start snap-always items-center justify-start bg-white px-8 md:px-7"
               >
                 <p
                   className={
                     isDesktop
-                      ? 'max-w-[50rem] whitespace-pre-line text-center text-base leading-6 tracking-wide text-black 4xl:max-w-[95rem] 4xl:text-4xl 4xl:leading-13'
+                      ? 'max-w-[50rem] whitespace-pre-line text-left text-base leading-[1.3] tracking-wide text-black 4xl:max-w-[95rem] 4xl:text-4xl 4xl:leading-13'
                       : 'max-w-md whitespace-pre-line text-center text-sm leading-5 tracking-wide text-black'
                   }
                 >

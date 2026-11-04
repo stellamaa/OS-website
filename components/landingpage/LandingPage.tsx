@@ -45,7 +45,7 @@ export default function LandingPage({ landing }: { landing: LandingPageData | nu
           src={osLogo}
           alt="OS"
           priority
-          className="h-4 w-auto md:h-[1.15rem] 4xl:h-9"
+          className="h-5 w-auto md:h-[1.35rem] 4xl:h-10"
         />
       </div>
 

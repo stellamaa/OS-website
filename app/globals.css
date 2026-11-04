@@ -28,6 +28,7 @@ body {
   background: var(--background);
   color: var(--foreground);
   font-family: var(--font-neue-haas), Arial, Helvetica, sans-serif;
+  font-weight: 500;
 }
 
 .map-gallery-scroll,

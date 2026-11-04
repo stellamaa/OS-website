@@ -62,7 +62,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" className={`${neueHaas.variable} h-full antialiased`} suppressHydrationWarning>
-      <body className="flex min-h-full flex-col font-[family-name:var(--font-neue-haas)] tracking-wide" suppressHydrationWarning>
+      <body className="flex min-h-full flex-col font-[family-name:var(--font-neue-haas)] font-medium tracking-wide" suppressHydrationWarning>
         <Providers>{children}</Providers>
       </body>
     </html>
