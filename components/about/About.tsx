@@ -193,7 +193,14 @@ export default function About({ projects }: { projects: AboutProjectItem[] }) {
           Logo on top — only element with mix-blend-difference.
           Reacts to the image and to black text underneath; body text stays solid black.
         */}
-        <OficinaSateliteLogo className="pointer-events-none absolute left-5 top-5 mix-blend-difference md:left-7 md:top-8" />
+        <button
+          type="button"
+          aria-label="Close"
+          onClick={leaveAbout}
+          className="absolute left-5 top-5 z-50 mix-blend-difference hover:opacity-60 md:left-7 md:top-8"
+        >
+          <OficinaSateliteLogo />
+        </button>
 
         <button
           type="button"
